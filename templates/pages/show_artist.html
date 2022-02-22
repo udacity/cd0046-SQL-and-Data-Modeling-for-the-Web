@@ -21,7 +21,7 @@
 			<i class="fas fa-phone-alt"></i> {% if artist.phone %}{{ artist.phone }}{% else %}No Phone{% endif %}
         </p>
         <p>
-			<i class="fas fa-link"></i> {% if artist.website %}<a href="{{ artist.website }}" target="_blank">{{ artist.website }}</a>{% else %}No Website{% endif %}
+			<i class="fas fa-link"></i> {% if artist.website_link %}<a href="{{ artist.website_link }}" target="_blank">{{ artist.website_link }}</a>{% else %}No Website{% endif %}
 		</p>
 		<p>
 			<i class="fab fa-facebook-f"></i> {% if artist.facebook_link %}<a href="{{ artist.facebook_link }}" target="_blank">{{ artist.facebook_link }}</a>{% else %}No Facebook Link{% endif %}
