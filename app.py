@@ -32,6 +32,12 @@ migrate = Migrate(app, db)
 # Models.
 #----------------------------------------------------------------------------#
 
+shows = db.Table('shows',
+    db.Column('venue_id', db.Integer, db.ForeignKey('venues.id'), primary_key=True),
+    db.Column('artist_id', db.Integer, db.ForeignKey('artists.id'), primary_key=True),
+    db.Column('start_time',db.DateTime)
+)
+
 class Venue(db.Model):
     __tablename__ = 'Venues'
 
@@ -45,8 +51,9 @@ class Venue(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     website_link = db.Column(db.String(120))
-    is_talent_seeking = db.Column(db.Boolean, nullable=False)
+    is_talent_seeking = db.Column(db.Boolean, nullable=False, default=False)
     talent_seeking_description = db.Column(db.String())
+    artists = db.relationships('Artists', secondary=shows, backref=db.backref('Artists',lazy=True))
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -62,7 +69,7 @@ class Artist(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     website_link = db.Column(db.String(120))
-    is_venue_seeking = db.Column(db.Boolean, nullable=False)
+    is_venue_seeking = db.Column(db.Boolean, nullable=False, default=False)
     venue_seeking_description = db.Column(db.String())
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
