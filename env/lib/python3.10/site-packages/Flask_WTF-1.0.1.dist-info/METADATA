@@ -1,0 +1,53 @@
+Metadata-Version: 2.1
+Name: Flask-WTF
+Version: 1.0.1
+Summary: Form rendering, validation, and CSRF protection for Flask with WTForms.
+Home-page: https://github.com/wtforms/flask-wtf/
+Author: Dan Jacob
+Author-email: danjac354@gmail.com
+Maintainer: Hsiaoming Yang
+Maintainer-email: me@lepture.com
+License: BSD-3-Clause
+Project-URL: Documentation, https://flask-wtf.readthedocs.io/
+Project-URL: Changes, https://flask-wtf.readthedocs.io/changes/
+Project-URL: Source Code, https://github.com/wtforms/flask-wtf/
+Project-URL: Issue Tracker, https://github.com/wtforms/flask-wtf/issues/
+Project-URL: Chat, https://discord.gg/pallets
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Flask
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Internet :: WWW/HTTP :: WSGI
+Classifier: Topic :: Internet :: WWW/HTTP :: WSGI :: Application
+Classifier: Topic :: Software Development :: Libraries :: Application Frameworks
+Requires-Python: >=3.6
+Description-Content-Type: text/x-rst
+License-File: LICENSE.rst
+Requires-Dist: Flask
+Requires-Dist: WTForms
+Requires-Dist: itsdangerous
+Provides-Extra: email
+Requires-Dist: email-validator ; extra == 'email'
+
+Flask-WTF
+=========
+
+Simple integration of Flask and WTForms, including CSRF, file upload,
+and reCAPTCHA.
+
+Links
+-----
+
+-   Documentation: https://flask-wtf.readthedocs.io/
+-   Changes: https://flask-wtf.readthedocs.io/changes/
+-   PyPI Releases: https://pypi.org/project/Flask-WTF/
+-   Source Code: https://github.com/wtforms/flask-wtf/
+-   Issue Tracker: https://github.com/wtforms/flask-wtf/issues/
+-   Chat: https://discord.gg/pallets
+
+
