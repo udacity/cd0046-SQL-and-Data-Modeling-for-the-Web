@@ -1,4 +1,4 @@
 env/
+_pycache_/
 CODEOWNERS
 LICENSE.txt
-_pycache_/
