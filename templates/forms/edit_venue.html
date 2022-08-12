@@ -3,6 +3,17 @@
 {% block content %}
   <div class="form-wrapper">
     <form class="form" method="post" action="/venues/{{venue.id}}/edit">
+      {{ form.csrf_token() }}
+        <div color='red'>
+        {% if form.errors %}
+        <h4>Your submission is invalid: Correct the following Errors</h4>
+            <ul>
+            {% for error, value in form.errors.items() %}
+                <li>{{error}}: {{value[0]}}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        </div>
       <h3 class="form-heading">Edit venue <em>{{ venue.name }}</em> <a href="{{ url_for('index') }}" title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
       <div class="form-group">
         <label for="name">Name</label>
