@@ -12,14 +12,15 @@ from flask_sqlalchemy import SQLAlchemy
 from models import (app, db, Venue, Shows, Artist)
 import logging
 from logging import Formatter, FileHandler
-from flask_wtf import Form, FlaskForm
+from flask_wtf import Form, FlaskForm, CSRFProtect
 from forms import *
 from datetime import datetime	
 from sqlalchemy import desc
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
-
+csrf = CSRFProtect()
+csrf.init_app(app)
 moment = Moment(app)
 db.init_app(app) 
 # TODO: connect to a local postgresql database
