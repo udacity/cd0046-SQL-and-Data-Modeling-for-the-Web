@@ -3,6 +3,8 @@
 #----------------------------------------------------------------------------#
 
 import json
+from types import CoroutineType
+from datetime import datetime
 import dateutil.parser
 import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
@@ -29,13 +31,6 @@ migrate = Migrate(app, db)
 # Models.
 #----------------------------------------------------------------------------#
 
-
-shows = db.Table('shows',
-  db.Column('venue_id', db.Integer, db.ForeignKey('venues.id'), primary_key=True),
-  db.Column('artist_id', db.Integer, db.ForeignKey('artists.id'), primary_key=True),
-  db.Column('start_time',db.DateTime)
-)
-
 class Venue(db.Model):
     __tablename__ = 'venues'
 
@@ -51,7 +46,7 @@ class Venue(db.Model):
     seeking_description = db.Column(db.String())
     genres = db.Column(db.PickleType())
     website = db.Column(db.String(120))
-    shows = db.relationship('Artist', secondary=shows, backref=db.backref('venues', lazy=True))
+    shows = db.relationship('Show', back_populates='venues')
     
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
@@ -71,7 +66,40 @@ class Artist(db.Model):
     seeking_description = db.Column(db.String())
     genres = db.Column(db.PickleType())
     website = db.Column(db.String(120))
+    shows = db.relationship('Show', back_populates='artists')
+
+    def upcoming_shows(self):
+      list_of_shows = []
+
+      for show in self.shows:
+        now = datetime.now()
+
+        if show.start_time > now:
+          list_of_shows.append(show)
+
+      return list_of_shows
+
+    def past_shows(self):
+      list_of_shows = []
+
+      for show in self.shows:
+        now = datetime.now()
+
+        if show.start_time < now:
+          list_of_shows.append(show)
+
+      return list_of_shows
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+
+
+class Show(db.Model):
+  __tablename__ = 'shows'
+
+  id = db.Column(db.Integer, primary_key=True)
+  artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'), nullable=False)
+  venue_id = db.Column(db.Integer, db.ForeignKey('venues.id'), nullable=False)
+  start_time = db.Column(db.DateTime)
+
 
 db.create_all()
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
@@ -106,7 +134,47 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_upcoming_shows should be aggregated based on number of upcoming shows per venue.
-  data= Venue.query.all()
+
+  db_venues = Venue.query.all()
+  areas = []
+  
+  for venue in db_venues:
+    if areas.length == 0:
+      area = {
+        'city': venue.city,
+        'state': venue.state,
+        'venues' : [venue]
+      }
+      areas.append(area)
+
+
+    else:
+      for area in areas:
+        if venue.city == area .city and venue.state == area.state:
+          area.venue.append(venue)
+          break
+
+  data=[{
+    "city": "San Francisco",
+    "state": "CA",
+    "venues": [{
+      "id": 1,
+      "name": "The Musical Hop",
+      "num_upcoming_shows": 0,
+    }, {
+      "id": 3,
+      "name": "Park Square Live Music & Coffee",
+      "num_upcoming_shows": 1,
+    }]
+  }, {
+    "city": "New York",
+    "state": "NY",
+    "venues": [{
+      "id": 2,
+      "name": "The Dueling Pianos Bar",
+      "num_upcoming_shows": 0,
+    }]
+  }]
   return render_template('pages/venues.html', areas=data);
 
 @app.route('/venues/search', methods=['POST'])
