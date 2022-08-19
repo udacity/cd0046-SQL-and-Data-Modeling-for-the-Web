@@ -30,7 +30,7 @@ from forms import *
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:442@localhost:5432/fyyur'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:442@localhost:5432/fyyur'
 db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
@@ -71,7 +71,7 @@ class Venue(db.Model):
     seeking_description = db.Column(db.String())
     genres = db.Column(db.PickleType())
     website = db.Column(db.String(120))
-    shows = db.relationship('Show', backref='venue')
+    shows = db.relationship('Show', backref='venue', cascade="all, delete")
   
     @hybrid_property
     def upcoming_shows(self):
@@ -250,6 +250,7 @@ def create_venue_form():
 def create_venue_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
+  error = False
   try : 
     talent = request.form['seeking_talent']
     seeking_talent= False
@@ -297,7 +298,9 @@ def delete_venue(venue_id):
   print('method called')
   try:
     print('deleting')
-    venue = Venue.query.get(venue_id)
+    print(venue_id)
+    venue = Venue.query.get(int(venue_id))
+    print(venue)
     db.session.delete(venue)
     db.session.commit()
   except:
@@ -306,14 +309,13 @@ def delete_venue(venue_id):
     print(sys.exc_info)
   finally:
     db.session.close()
-
   if error:
     flash('An error occurred. Venue could not be deleted.')
   else:
-    return render_template('pages/home.html')
+    return redirect(url_for('index'))
   # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
   # clicking that button delete it from the db then redirect the user to the homepage
-  return None
+  return render_template('pages/home.html')
 
 #  Artists
 #  ----------------------------------------------------------------
