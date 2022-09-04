@@ -280,23 +280,19 @@ def edit_artist_submission(artist_id):
   error = False
   form = ArtistForm(request.form)
   try:
-      name = form.name.data
-      city = form.city.data
-      state = form.state.data
-      phone = form.phone.data
-      image_link = form.image_link.data
-      facebook_link = form.facebook_link.data
-      genres = form.genres.data
-      website = form.website_link.data
-      seeking_venue = form.seeking_venue.data
-      seeking_description = form.seeking_description.data
-      artist = Artist(name=name, city=city, state=state, phone=phone,
-                      image_link=image_link, facebook_link=facebook_link,
-                      genres=genres, website=website, seeking_venue=seeking_venue,
-                      seeking_description=seeking_description)
+      artist = Artist.query.get(artist_id)
+      artist.name = form.name.data
+      artist.city = form.city.data
+      artist.state = form.state.data
+      artist.phone = form.phone.data
+      artist.image_link = form.image_link.data
+      artist.facebook_link = form.facebook_link.data
+      artist.genres = form.genres.data
+      artist.website = form.website_link.data
+      artist.seeking_venue = form.seeking_venue.data
+      artist.seeking_description = form.seeking_description.data
   # *DONE: take values from the form submitted, and update existing
   # *artist record with ID <artist_id> using the new attributes
-      db.session.add(artist)
       db.session.commit()
   except Exception as e:
       error = True
@@ -338,21 +334,18 @@ def edit_venue_submission(venue_id):
   error = False
   form = VenueForm(request.form)
   try:
-      name = form.name.data
-      city = form.city.data
-      state = form.state.data
-      address = form.address.data
-      phone = form.phone.data
-      image_link = form.image_link.data
-      facebook_link = form.facebook_link.data
-      genres = form.genres.data
-      website = form.website_link.data
-      seeking_talent = form.seeking_talent.data
-      seeking_description = form.seeking_description.data
-      venue = Venue(name=name, city=city, state=state, address=address,
-                    phone=phone, genres=genres, facebook_link=facebook_link, website=website,
-                    image_link=image_link, seeking_talent=seeking_talent, seeking_description=seeking_description)
-      db.session.add(venue)
+      venue = Venue.query.get(venue_id)
+      venue.name = form.name.data
+      venue.city = form.city.data
+      venue.state = form.state.data
+      venue.address = form.address.data
+      venue.phone = form.phone.data
+      venue.image_link = form.image_link.data
+      venue.facebook_link = form.facebook_link.data
+      venue.genres = form.genres.data
+      venue.website = form.website_link.data
+      venue.seeking_talent = form.seeking_talent.data
+      venue.seeking_description = form.seeking_description.data
       db.session.commit()
   except Exception as e:
       error = True
