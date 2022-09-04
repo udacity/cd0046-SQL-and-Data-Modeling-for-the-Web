@@ -21,7 +21,7 @@ moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
-# TODO: connect to a local postgresql database
+# *DONE: connected to a local postgresql database via config.py
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -39,7 +39,7 @@ class Venue(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # *DONE: implemented any missing fields, as a database migration using Flask-Migrate
     genres = db.Column(db.ARRAY(db.String(120)))
     website = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean)
@@ -60,8 +60,7 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # *DONE: implemented missing fields, as a database migration using Flask-Migrate
     genres = db.Column(db.ARRAY(db.String(120)))
     website = db.Column(db.String(120))
     seeking_venue = db.Column(db.Boolean)
@@ -71,7 +70,7 @@ class Artist(db.Model):
     def __repr__(self):
         return f'<Venue {self.id} {self.name}>'
 
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+# *DONE Implemented Show and Artist models, and completed all model relationships and properties, as a database migration.
 class Show(db.Model):
     __tablename__ = 'Show'
     id = db.Column(db.Integer, primary_key=True)
