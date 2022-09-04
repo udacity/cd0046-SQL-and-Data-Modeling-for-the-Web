@@ -175,18 +175,19 @@ def create_venue_form():
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
   error = False
+  form = VenueForm(request.form)
   try:
-      name = request.form['name']
-      city = request.form['city']
-      state = request.form['state']
-      address = request.form['address']
-      phone = request.form['phone']
-      image_link = request.form['image_link']
-      facebook_link = request.form['facebook_link']
-      genres = request.form.getlist('genres')
-      website = request.form['website_link']
-      seeking_talent = True if 'seeking_talent' in request.form else False
-      seeking_description = request.form['seeking_description']
+      name = form.name.data
+      city = form.city.data
+      state = form.state.data
+      address = form.address.data
+      phone = form.phone.data
+      image_link = form.image_link.data
+      facebook_link = form.facebook_link.data
+      genres = form.genres.data
+      website = form.website_link.data
+      seeking_talent = form.seeking_talent.data
+      seeking_description = form.seeking_description.data
   # *DONE: insert form data as a new Venue record in the db, instead
   # *DONE: modify data to be the data object returned from db insertion
       venue = Venue(name=name, city=city, state=state, address=address,
@@ -395,17 +396,18 @@ def create_artist_form():
 def create_artist_submission():
   # called upon submitting the new artist listing form
   error = False
+  form = ArtistForm(request.form)
   try:
-      name = request.form['name']
-      city = request.form['city']
-      state = request.form['state']
-      phone = request.form['phone']
-      image_link = request.form['image_link']
-      facebook_link = request.form['facebook_link']
-      genres = request.form.getlist('genres')
-      website = request.form['website_link']
-      seeking_venue = True if 'seeking_venue' in request.form else False
-      seeking_description = request.form['seeking_description']
+      name = form.name.data
+      city = form.city.data
+      state = form.state.data
+      phone = form.phone.data
+      image_link = form.image_link.data
+      facebook_link = form.facebook_link.data
+      genres = form.genres.data
+      website = form.website_link.data
+      seeking_venue = form.seeking_venue.data
+      seeking_description = form.seeking_description.data
   # *DONE: insert form data as a new Venue record in the db, instead
   # *DONE: modify data to be the data object returned from db insertion
       artist = Artist(name=name, city=city, state=state, phone=phone,
@@ -485,10 +487,11 @@ def create_shows():
 def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
   error = False
+  form = ShowForm(request.form)
   try:
-      start_time = request.form['start_time']
-      artist_id = request.form['artist_id']
-      venue_id = request.form['venue_id']
+      start_time = form.start_time.data
+      artist_id = form.artist_id.data
+      venue_id = form.venue_id.data
       show = Show(artist_id=artist_id, venue_id=venue_id,
                   start_time=start_time)
   # *DONE: insert form data as a new Show record in the db
