@@ -5,15 +5,41 @@
 <h3>{{ area.city }}, {{ area.state }}</h3>
 	<ul class="items">
 		{% for venue in area.venues %}
-		<li>
+		<li style="display: flex">
 			<a href="/venues/{{ venue.id }}">
 				<i class="fas fa-music"></i>
 				<div class="item">
 					<h5>{{ venue.name }}</h5>
 				</div>
 			</a>
+			<button class ="delete-venue-button" data-id= "{{venue.id}}" type ="button"> &cross; </button>
 		</li>
 		{% endfor %}
 	</ul>
+
+	<script>
+        var drows = document.querySelectorAll('.delete-venue-button');
+        for (i=0 ; i< drows.length ; i++){
+            const drow = drows[i];
+            drow.onclick= function (e){
+                const venue_id = e.target.dataset['id'];
+                console.log (venue_id);
+                fetch ('/venues/'+venue_id,{
+                	method: 'DELETE'
+				})
+				.then(function(response) {
+                 return response.json();
+				})
+				.then(function(jsonResponse) {
+                 console.log(jsonResponse);
+                 document.location = '/'
+            	})
+			}
+
+        }
+
+	</script>
+
 {% endfor %}
 {% endblock %}
+

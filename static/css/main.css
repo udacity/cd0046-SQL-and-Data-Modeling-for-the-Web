@@ -209,3 +209,9 @@ h2.monospace {
 .subtitle {
   opacity: 0.5;
 }
+.error {
+	background-color:red
+}
+.info{
+  background-color:grey
+}
