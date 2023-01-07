@@ -181,3 +181,9 @@ python3 app.py
 6. **Verify on the Browser**<br>
 Navigate to project homepage [http://127.0.0.1:5000/](http://127.0.0.1:5000/) or [http://localhost:5000](http://localhost:5000) 
 
+## Troubleshooting:
+- If you encounter any dependency errors, please ensure that you are using Python 3.9 or lower.
+- If you are still facing the dependency errors, follow the given commands:
+  - `using pip install --upgrade flask-moment`
+  - `Using pip install Werkzeug==2.0.0`
+  - `Using pip uninstall Flask and then pip install flask==2.0.3`
