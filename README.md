@@ -170,6 +170,18 @@ source env/Scripts/activate
 ```
 pip install -r requirements.txt
 ```
+>**Note** - Because the code is run on different unrestricted environments, some libraries maybe deprecated or outdated in relation to the python version you use.
+> If the installation fails due to this, run the command below:
+> ```
+> pip list --outdated
+> ```
+> A list of outdated libraries will be shown in your terminal.
+> Run this command for every library:
+> ```
+> pip install -U <PackageName>
+> ```
+> ## OR
+> Remove the versions numbers attached to every library and run dependency installations without specific versions
 
 5. **Run the development server:**
 ```
