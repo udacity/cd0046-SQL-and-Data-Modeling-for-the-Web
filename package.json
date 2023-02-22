@@ -1,0 +1,23 @@
+{
+  "name": "fullstack_web_dev_proj_1_booking_site",
+  "version": "1.0.0",
+  "description": "Fyyur\r -----",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baronmdw/fullstack_web_dev_proj_1_booking_site.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/baronmdw/fullstack_web_dev_proj_1_booking_site/issues"
+  },
+  "homepage": "https://github.com/baronmdw/fullstack_web_dev_proj_1_booking_site#readme",
+  "dependencies": {
+    "bootstrap": "^3.4.1"
+  }
+}
