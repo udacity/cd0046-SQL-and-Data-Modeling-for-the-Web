@@ -1,4 +1,3 @@
-
 /**
  * @file
  * Main stylesheet file.
@@ -8,38 +7,58 @@
 /*****************************************************************************
  * Main elements
  ****************************************************************************/
-html {
+html
+{
   overflow-y: scroll;
 }
-section {
+
+section
+{
   margin: 50px 0;
 }
-section > h2 {
+
+section > h2
+{
   margin-bottom: 20px;
 }
-a {
+
+a
+{
   cursor: pointer;
   color: #ff8c3a;
 }
-.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.active>a:focus {
+
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus
+{
   background: initial;
   color: initial;
 }
-p.lead {
+
+p.lead
+{
   margin-top: 30px;
 }
-::selection {
+
+::selection
+{
   background: #555;
   color: #FFF;
 }
-::-moz-selection {
+
+::-moz-selection
+{
   background: #555;
   color: #FFF;
 }
-::-webkit-selection {
+
+::-webkit-selection
+{
   background: #555;
   color: #FFF;
 }
+
 /* Main elements end */
 
 
@@ -49,28 +68,38 @@ p.lead {
 
 /* Various other styles end */
 
-#front-splash {
-	width: 100%;
+#front-splash
+{
+  width: 100%;
 }
-.navbar.navbar-fixed-top {
+
+.navbar.navbar-fixed-top
+{
   background: none;
   box-shadow: none;
   border-bottom: none;
   padding-top: 10px;
   background-color: white;
 }
-.navbar-nav .search {
+
+.navbar-nav .search
+{
   margin-top: 6px;
   width: 300px;
   margin-right: 15px;
 }
-.navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.active>a {
-    background: none;
-    box-shadow: none;
-    color: black;
-    font-weight: bold;
+
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .active > a
+{
+  background: none;
+  box-shadow: none;
+  color: black;
+  font-weight: bold;
 }
-.navbar-nav .search input {
+
+.navbar-nav .search input
+{
   border-radius: 50px;
   background: #f2f2f2;
   border: none;
@@ -80,66 +109,92 @@ p.lead {
   font-size: 1.4rem;
 }
 
-.btn-default {
-    border: none;
-    background-color: #dde2e7;
-    background-image: linear-gradient(#dde2e7,#dde2e7);
-    color: #444;
+.btn-default
+{
+  border: none;
+  background-color: #dde2e7;
+  background-image: linear-gradient(#dde2e7, #dde2e7);
+  color: #444;
 }
 
-#content h3 {
+#content h3
+{
   margin-top: 15px;
   margin-bottom: 15px;
 }
 
-#content h3 button {
-    margin-right: 10px;
+#content h3 button
+{
+  margin-right: 10px;
 }
 
-ul.items {
+ul.items
+{
   list-style: none;
   padding: 0;
   margin: 0;
 }
-ul.items > li > a {
+
+ul.items > li > a
+{
   margin-bottom: 15px;
   display: flex;
   color: initial;
   text-decoration: initial;
 }
-ul.items > li > a > i {
+
+ul.items > li > a > i
+{
   padding: 7px 10px 0;
 }
-ul.items > li:hover {
+
+ul.items > li:hover
+{
   color: orange;
   cursor: pointer;
 }
-ul.items > li:hover h5 {
+
+ul.items > li:hover h5
+{
   color: orange;
 }
-.item {
+
+.item
+{
   padding: 5px 5px 5px;
   flex: 1;
 }
-.item h5 {
+
+.item h5
+{
   margin-top: 0;
   margin-bottom: 5px;
 }
-img {
+
+img
+{
   max-width: 100%;
   max-height: 500px;
 }
-p {
+
+p
+{
   margin: 5px 0;
 }
-p > i {
+
+p > i
+{
   width: 30px;
   text-align: center;
 }
-.not-seeking {
+
+.not-seeking
+{
   opacity: 0.6;
 }
-.seeking {
+
+.seeking
+{
   display: inline-block;
   padding: 20px 30px;
   margin-top: 30px;
@@ -148,16 +203,23 @@ p > i {
   background: #ffffc6;
 }
 
-.seeking > button {
+.seeking > button
+{
   margin-left: 15px;
 }
-.description {
+
+.description
+{
   max-width: 450px;
 }
-.genres {
+
+.genres
+{
   margin-bottom: 15px;
 }
-span.genre {
+
+span.genre
+{
   display: inline-block;
   font-family: monospace;
   padding: 4px 8px;
@@ -169,43 +231,64 @@ span.genre {
   text-transform: uppercase;
   border: solid 1px #eee;
 }
-.monospace {
+
+.monospace
+{
   font-family: monospace;
   text-transform: uppercase;
 }
-h1.monospace {
+
+h1.monospace
+{
   font-size: 2.5rem;
 }
 
-h2.monospace {
+h2.monospace
+{
   font-size: 2.25rem;
   opacity: 0.7;
 }
-.shows .tile-show {
+
+.shows .tile-show
+{
   height: 350px;
 }
-.tile {
+
+.tile
+{
   text-align: center;
   padding: 15px 25px;
   border: solid 1px #ebebeb;
   height: 325px;
   margin-bottom: 15px;
 }
-.tile img {
+
+.tile img
+{
   max-height: 200px;
 }
-.form-wrapper {
+
+.form-wrapper
+{
   max-width: 400px;
 }
-.form-inline {
+
+.form-inline
+{
   font-size: 0;
 }
-.form-inline .form-group {
+
+.form-inline .form-group
+{
   width: 50%;
 }
-.form-inline .form-control {
+
+.form-inline .form-control
+{
   width: 100%;
 }
-.subtitle {
+
+.subtitle
+{
   opacity: 0.5;
 }

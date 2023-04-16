@@ -1,4 +1,3 @@
-
 /**
  * @file
  * Main responsive stylesheet file.
@@ -8,28 +7,36 @@
 /*****************************************************************************
  * Extra small devices (phones, up to 767px)
  ****************************************************************************/
-@media (max-width: 767px) {}
+@media (max-width: 767px)
+{}
+
 /* Extra small devices (phones, up to 767px) end */
 
 
 /*****************************************************************************
  * Small devices (tablets, 768px and up)
  ****************************************************************************/
-@media (min-width: 768px) {}
+@media (min-width: 768px)
+{}
+
 /* Small devices (tablets, 768px and up) end */
 
 
 /*****************************************************************************
  * Medium devices (desktops, 992px and up)
  ****************************************************************************/
-@media (max-width: 992px) {}
+@media (max-width: 992px)
+{}
+
 /* Medium devices (desktops, 992px and up) end */
 
 
 /*****************************************************************************
  * Large devices (large desktops, 1200px and up)
  ****************************************************************************/
-@media (max-width: 1200px) {}
+@media (max-width: 1200px)
+{}
+
 /* Large devices (large desktops, 1200px and up) end */
 
 
