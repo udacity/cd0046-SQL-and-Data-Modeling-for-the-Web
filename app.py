@@ -6,9 +6,18 @@ import json
 import logging
 from logging import FileHandler, Formatter
 
-import babel
+import babel.dates
 import dateutil.parser
-from flask import Flask, Response, flash, redirect, render_template, request, url_for
+from flask import (
+    Flask,
+    Response,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import Form
@@ -300,7 +309,7 @@ def delete_venue(venue_id):
 
     # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
     # clicking that button delete it from the db then redirect the user to the homepage
-    return None
+    return jsonify(None)
 
 
 #  Artists
@@ -505,7 +514,9 @@ def edit_venue(venue_id):
         "website": "https://www.themusicalhop.com",
         "facebook_link": "https://www.facebook.com/TheMusicalHop",
         "seeking_talent": True,
-        "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
+        "seeking_description": (
+            "We are on the lookout for a local artist to play every two weeks. Please call us."
+        ),
         "image_link": (
             "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBf"
             "aWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
