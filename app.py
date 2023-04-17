@@ -1,82 +1,86 @@
 # ----------------------------------------------------------------------------#
 # Imports
 # ----------------------------------------------------------------------------#
-
-import json
 import logging
 from logging import FileHandler, Formatter
 
 import babel.dates
 import dateutil.parser
-from flask import (
-    Flask,
-    Response,
-    flash,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    url_for,
-)
+from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
+from flask_migrate import Migrate
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import Form
 from forms import ArtistForm, ShowForm, VenueForm
 
 # ----------------------------------------------------------------------------#
-# App Config.
+# App Config
 # ----------------------------------------------------------------------------#
-
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object("config")
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
-# TODO: connect to a local postgresql database
 
 # ----------------------------------------------------------------------------#
-# Models.
+# Models
 # ----------------------------------------------------------------------------#
-
-
 class Venue(db.Model):
-    __tablename__ = "Venue"
+    __tablename__ = "venues"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    genres = db.Column(db.ARRAY(db.String(120)), nullable=False, default=[])
+    address = db.Column(db.String(120), nullable=False)
+    city = db.Column(db.String(120), nullable=False)
+    state = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120))
+    website = db.Column(db.String(500))
+    facebook_link = db.Column(db.String(500))
+    seeking_talent = db.Column(db.Boolean(), nullable=False, default=False)
+    seeking_description = db.Column(db.String(500))
     image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
+    shows = db.relationship("Show", backref="venue", lazy=True)
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    def __repr__(self):
+        return f"<Venue ID: {self.id}, Venue Name: {self.name}>"
 
 
 class Artist(db.Model):
-    __tablename__ = "Artist"
+    __tablename__ = "artists"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
+    name = db.Column(db.String(120), nullable=False)
+    genres = db.Column(db.ARRAY(db.String(120)), nullable=False, default=[])
+    city = db.Column(db.String(120), nullable=False)
+    state = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
+    website = db.Column(db.String(500))
+    facebook_link = db.Column(db.String(500))
+    seeking_venue = db.Column(db.Boolean(), nullable=False, default=False)
+    seeking_description = db.Column(db.String(500))
     image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
+    shows = db.relationship("Show", backref="artist", lazy=True)
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    def __repr__(self):
+        return f"<Artist ID: {self.id}, Artist Name: {self.name}>"
 
 
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a
-# database migration.
+class Show(db.Model):
+    __tablename__ = "Show"
+
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    venue_id = db.Column(db.Integer, db.ForeignKey("venue.id"), nullable=False)
+    artist_id = db.Column(db.Integer, db.ForeignKey("artist.id"), nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False)
+
+    def __repr__(self):
+        return f"<Show ID: {self.id}, Venue ID: {self.venue_id}, Artist ID: {self.artist_id}>"
+
 
 # ----------------------------------------------------------------------------#
-# Filters.
+# Filters
 # ----------------------------------------------------------------------------#
-
-
 def format_datetime(value, format="medium"):
     date = dateutil.parser.parse(value)
     if format == "full":
@@ -88,20 +92,18 @@ def format_datetime(value, format="medium"):
 
 app.jinja_env.filters["datetime"] = format_datetime
 
-# ----------------------------------------------------------------------------#
-# Controllers.
-# ----------------------------------------------------------------------------#
 
-
+# ----------------------------------------------------------------------------#
+# Controllers
+# ----------------------------------------------------------------------------#
 @app.route("/")
 def index():
     return render_template("pages/home.html")
 
 
+# ----------------------------------------------------------------------------#
 #  Venues
-#  ----------------------------------------------------------------
-
-
+# ----------------------------------------------------------------------------#
 @app.route("/venues")
 def venues():
     # TODO: replace with real venues data.
@@ -279,10 +281,9 @@ def show_venue(venue_id):
     return render_template("pages/show_venue.html", venue=data)
 
 
+# ----------------------------------------------------------------------------#
 #  Create Venue
-#  ----------------------------------------------------------------
-
-
+# ----------------------------------------------------------------------------#
 @app.route("/venues/create", methods=["GET"])
 def create_venue_form():
     form = VenueForm()
@@ -312,8 +313,9 @@ def delete_venue(venue_id):
     return jsonify(None)
 
 
+# ----------------------------------------------------------------------------#
 #  Artists
-#  ----------------------------------------------------------------
+# ----------------------------------------------------------------------------#
 @app.route("/artists")
 def artists():
     # TODO: replace with real data returned from querying the database
@@ -467,8 +469,9 @@ def show_artist(artist_id):
     return render_template("pages/show_artist.html", artist=data)
 
 
+# ----------------------------------------------------------------------------#
 #  Update
-#  ----------------------------------------------------------------
+# ----------------------------------------------------------------------------#
 @app.route("/artists/<int:artist_id>/edit", methods=["GET"])
 def edit_artist(artist_id):
     form = ArtistForm()
@@ -533,10 +536,9 @@ def edit_venue_submission(venue_id):
     return redirect(url_for("show_venue", venue_id=venue_id))
 
 
+# ----------------------------------------------------------------------------#
 #  Create Artist
-#  ----------------------------------------------------------------
-
-
+# ----------------------------------------------------------------------------#
 @app.route("/artists/create", methods=["GET"])
 def create_artist_form():
     form = ArtistForm()
@@ -556,10 +558,9 @@ def create_artist_submission():
     return render_template("pages/home.html")
 
 
+# ----------------------------------------------------------------------------#
 #  Shows
-#  ----------------------------------------------------------------
-
-
+# ----------------------------------------------------------------------------#
 @app.route("/shows")
 def shows():
     # displays list of shows at /shows
@@ -665,7 +666,7 @@ if not app.debug:
     app.logger.info("errors")
 
 # ----------------------------------------------------------------------------#
-# Launch.
+# Launch
 # ----------------------------------------------------------------------------#
 
 # Default port:
