@@ -8,7 +8,7 @@ from wtforms import (
     SelectMultipleField,
     StringField,
 )
-from wtforms.validators import URL, AnyOf, DataRequired
+from wtforms.validators import URL, DataRequired
 
 
 class ShowForm(Form):
