@@ -1,5 +1,7 @@
-babel==2.9.0
-python-dateutil==2.6.0
-flask-moment==0.11.0
-flask-wtf==0.14.3
-flask_sqlalchemy==2.4.4
+babel==2.12.1
+python-dateutil==2.8.2
+flask-moment==1.0.5
+flask-wtf==1.1.1
+flask_sqlalchemy==3.0.5
+Flask-Migrate==4.0.4
+psycopg2-binary==2.9.6
