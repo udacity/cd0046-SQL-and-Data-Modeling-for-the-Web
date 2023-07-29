@@ -1,0 +1,7 @@
+vscode/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+ENV/
+node_modules/
