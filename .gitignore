@@ -5,3 +5,5 @@ __pycache__/
 
 ENV/
 node_modules/
+
+error.log
