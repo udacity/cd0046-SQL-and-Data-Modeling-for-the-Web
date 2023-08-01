@@ -2,7 +2,6 @@
 # Imports
 #----------------------------------------------------------------------------#
 
-import json
 import dateutil.parser
 import babel
 import sys
@@ -27,12 +26,12 @@ migrate = Migrate(app, db)
 #----------------------------------------------------------------------------#
 
 def format_datetime(value, format='medium'):
-  date = dateutil.parser.parse(value)
-  if format == 'full':
-      format="EEEE MMMM, d, y 'at' h:mma"
-  elif format == 'medium':
-      format="EE MM, dd, y h:mma"
-  return babel.dates.format_datetime(date, format, locale='en')
+    date = dateutil.parser.parse(value)
+    if format == 'full':
+        format="EEEE MMMM, d, y 'at' h:mma"
+    elif format == 'medium':
+        format="EE MM, dd, y h:mma"
+    return babel.dates.format_datetime(date, format, locale='en')
 
 app.jinja_env.filters['datetime'] = format_datetime
 
@@ -121,7 +120,7 @@ def show_venue(venue_id):
         data = {
             "id": venue.id,
             "name": venue.name,
-            "genres": venue.genres.split(','),
+            "genres": venue.genres,
             "address": venue.address,
             "city": venue.city,
             "state": venue.state,
@@ -171,7 +170,7 @@ def create_venue_submission():
             genres=create_venue_form.genres.data,
             facebook_link=create_venue_form.facebook_link.data,
             image_link=create_venue_form.image_link.data,
-            website=create_venue_form.website.data,
+            website=create_venue_form.website_link.data,
             seeking_talent=create_venue_form.seeking_talent.data,
             seeking_description=create_venue_form.seeking_description.data
         )
@@ -273,11 +272,11 @@ def show_artist(artist_id):
         data = {
             "id": artist.id,
             "name": artist.name,
-            "genres": artist.genres.split(','),
+            "genres": artist.genres,
             "city": artist.city,
             "state": artist.state,
             "phone": artist.phone,
-            "website": artist.website_link,
+            "website": artist.website,
             "facebook_link": artist.facebook_link,
             "seeking_venue": artist.seeking_venue,
             "seeking_description": artist.seeking_description,
@@ -312,7 +311,7 @@ def edit_artist_submission(artist_id):
         artist.genres = artist_form.genres.data
         artist.image_link = artist_form.image_link.data
         artist.facebook_link = artist_form.facebook_link.data
-        artist.website_link = artist_form.website_link.data
+        artist.website = artist_form.website_link.data
         artist.seeking_venue = artist_form.seeking_venue.data
         artist.seeking_description = artist_form.seeking_description.data
 
@@ -359,10 +358,11 @@ def edit_venue(venue_id):
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
+    venue_id = int(venue_id)
     venue_form = VenueForm(request.form)
     error = False
     try:
-        venue = Artist.query.get(venue_id)
+        venue = Venue.query.get(venue_id)
         venue.name = venue_form.name.data
         venue.genres = venue_form.genres.data
         venue.address = venue_form.address.data
