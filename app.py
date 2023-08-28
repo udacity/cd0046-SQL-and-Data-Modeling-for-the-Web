@@ -2,6 +2,9 @@
 # Imports
 #----------------------------------------------------------------------------#
 from datetime import datetime
+import logging
+from logging import Formatter, FileHandler
+
 from flask import (
     abort,
     Flask, render_template,
@@ -11,9 +14,7 @@ from flask import (
 )
 from flask_moment import Moment
 from flask_migrate import Migrate
-import logging
-from logging import Formatter, FileHandler
-from flask_wtf import Form
+
 from forms import ArtistForm, ShowForm, VenueForm
 from model import Artist, db, Show, Venue
 from util import format_datetime
@@ -27,7 +28,6 @@ moment = Moment(app)
 app.config.from_object('config')
 db.init_app(app)
 migrate = Migrate(app, db)
-
 
 #----------------------------------------------------------------------------#
 # Filters
@@ -53,10 +53,6 @@ def venues():
         venue_groups = db.session.query(Venue.city, Venue.state)\
                                 .group_by(Venue.city, Venue.state)\
                                 .order_by(Venue.state).all()
-        if not venue_groups: 
-            flash('No venue(s) yet. Please create one.') 
-            return redirect(url_for('create_venue_form'))
-        
         resp = []    
         for group in venue_groups:
             venues_in_group = []
@@ -84,9 +80,11 @@ def venues():
                 'state': state,
                 'venues': sorted_num_shows_desc,
             })
+            app.logger.info('RESPONSE', resp)
         return render_template('pages/venues.html', areas=resp)
             
-    except:
+    except Exception as e:
+        app.logger.error(e)
         abort(500)
         
     finally:
@@ -113,10 +111,11 @@ def search_venues():
             results={'count': len(results), 'data': data}, 
             search_term=search_term,
         )
-        
-    except:
+
+    except Exception as e:
+        app.logger.error(e)
         abort(500)
-        
+
     finally:
         db.session.close()
 
@@ -124,13 +123,14 @@ def search_venues():
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
     try:
-        venue = db.session.query(Venue).filter(Venue.id == venue_id)
+        venue = db.session.query(Venue).filter(Venue.id == venue_id).one_or_none()
         if not venue:
             abort(404)
             
         return render_template('pages/show_venue.html', venue=venue.to_dict())
     
-    except:
+    except Exception as e:
+        app.logger.error(e)
         abort(500)
         
     finally:
@@ -149,6 +149,7 @@ def create_venue_submission():
     if form.validate():
         name = form.name.data
         city = form.city.data
+        
         try:
             exists = db.session.query(Venue).filter(Venue.name == name, 
                                                     Venue.city == city)\
@@ -157,13 +158,19 @@ def create_venue_submission():
                 flash(f'"{name}" already exists in {city}.')
                 return redirect(url_for('create_venue_form'))
             
-            new_venue = form.populate_obj(Venue())
+            new_venue = Venue(name=name, city=city, state=form.state.data, address=form.address.data, 
+                              phone=form.phone.data, image_link=form.image_link.data, 
+                              facebook_link=form.facebook_link.data, website=form.website_link.data, 
+                              seeking_talent=form.seeking_talent.data, 
+                              seeking_description=form.seeking_description.data, 
+                              genres=form.genres.data)
             db.session.add(new_venue) 
             db.session.commit()
             flash(f'Venue "{name}" successfully listed!')
             return render_template('pages/home.html')
         
-        except:
+        except Exception as e:
+            app.logger.error(e)
             flash(f'An error occurred. Venue "{name}" could not be listed.')
             db.session.rollback()
             return redirect(url_for('create_venue_form'))
@@ -189,8 +196,9 @@ def delete_venue(venue_id):
         flash(f'Venue "{exists.name}" has been successfully removed.')
         return redirect(url_for('show_venue'))
         
-    except:
+    except Exception as e:
         db.session.rollback()
+        app.logger.error(e)
         flash('An error has occured.')
         return redirect(url_for('show_venue'))
         
@@ -205,10 +213,11 @@ def edit_venue(venue_id):
         if not venue:
             abort(404)
             
-        form = VenueForm(object=venue)
+        form = VenueForm(obj=venue)
         return render_template('forms/edit_venue.html', form=form, venue=venue)
     
-    except:
+    except Exception as e:
+        app.logger.error(e)
         abort(500)
         
     finally:
@@ -218,15 +227,28 @@ def edit_venue(venue_id):
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
     form = VenueForm(request.form, meta={'csrf': False})
-    venue = db.session.query(Venue).filter(Venue.id == venue_id)
+    venue = db.session.query(Venue).filter(Venue.id == venue_id).one_or_none()
+
     if form.validate():
         try:
-            venue = form.populate_obj(venue)
+            venue.name = form.name.data
+            venue.city = form.city.data
+            venue.state = form.state.data
+            venue.address = form.address.data
+            venue.phone = form.phone.data
+            venue.image_link = form.image_link.data
+            venue.facebook_link = form.facebook_link.data
+            venue.website = form.website_link.data
+            venue.seeking_talent = form.seeking_talent.data
+            venue.seeking_description = form.seeking_description.data
+            venue.genres = form.genres.data
+
             db.session.commit()
             flash('Venue updated successfuly!')
             return redirect(url_for('show_venue', venue_id=venue_id))
         
-        except: 
+        except Exception as e: 
+            app.logger.error(e)
             flash('Unsuccessful update.')  
             db.session.rollback()
             return redirect(url_for('edit_venue', venue_id=venue_id))
@@ -250,10 +272,6 @@ def edit_venue_submission(venue_id):
 def artists():
     try:
         artists = db.session.query(Artist).all()
-        if not artists: 
-            flash('No artist(s) yet. Please create one.') 
-            return redirect(url_for('create_artist_form'))
-        
         data = []
         for artist in artists:
             data.append({
@@ -262,9 +280,10 @@ def artists():
             })
         return render_template('pages/artists.html', artists=data)
     
-    except:
+    except Exception as e:
+        app.logger.error(e)
         abort(500)
-        
+         
     finally:
         db.session.close()
         
@@ -290,7 +309,8 @@ def search_artists():
             search_term=search_term,
         )
         
-    except:
+    except Exception as e:
+        app.logger.error(e)
         abort(500)
         
     finally:
@@ -300,13 +320,14 @@ def search_artists():
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
     try:
-        artist = db.session.query(Artist).filter(Artist.id == artist_id)
+        artist = db.session.query(Artist).filter(Artist.id == artist_id).one_or_none()
         if not artist:
             abort(404)
             
         return render_template('pages/show_artist.html', artist=artist.to_dict())
     
-    except:
+    except Exception as e:
+        app.logger.error(e)
         abort(500)
         
     finally:
@@ -322,22 +343,28 @@ def create_artist_form():
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
     form = ArtistForm(request.form, meta={'csrf': False})
-    name = form.name.data
+
     if form.validate():
+        name = form.name.data
         try:
             exists = db.session.query(Artist).filter(Artist.name == name).one_or_none()
             if exists: 
                 flash('This name is already in use.')
                 return redirect(url_for('create_artist_form'))
             
-            new_artist = Artist()
-            form.populate_obj(new_artist)
+            new_artist = Artist(name=name, city=form.city.data, state=form.state.data, 
+                                phone=form.phone.data, image_link=form.image_link.data, 
+                                facebook_link=form.facebook_link.data, website=form.website_link.data,
+                                seeking_venue=form.seeking_venue.data, 
+                                seeking_description=form.seeking_description.data, 
+                                genres=form.genres.data)
             db.session.add(new_artist) 
             db.session.commit()
             flash(f'Artist "{name}" was successfully listed!')
             return redirect(url_for('show_artist', artist_id=new_artist.id))
                 
-        except:
+        except Exception as e:
+            app.logger.error(e)
             flash(f'An error occurred. Artist "{name}" could not be listed.')
             db.session.rollback()
             return redirect(url_for('create_artist_form'))
@@ -363,7 +390,8 @@ def edit_artist(artist_id):
         form = ArtistForm(object=artist)
         return render_template('forms/edit_artist.html', form=form, artist=artist)
     
-    except:
+    except Exception as e:
+        app.logger.error(e)
         abort(500)
         
     finally:
@@ -373,15 +401,27 @@ def edit_artist(artist_id):
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
     form = ArtistForm(request.form, meta={'csrf': False})
-    artist = db.session.query(Artist).filter(Artist.id == artist_id)
+    artist = db.session.query(Artist).filter(Artist.id == artist_id).one_or_none()
+
     if form.validate():
         try: 
-            artist = form.populate_obj(artist)
+            artist.name = form.name.data
+            artist.city = form.city.data
+            artist.state = form.state.data
+            artist.phone = form.phone.data
+            artist.image_link = form.image_link.data
+            artist.facebook_link = form.facebook_link.data
+            artist.website = form.website_link.data
+            artist.seeking_venue = form.seeking_venue.data
+            artist.seeking_description = form.seeking_description.data
+            artist.genres = form.genres.data
+
             db.session.commit()
             flash('Artist successfully updated!')
             return redirect(url_for('show_artist', artist_id=artist_id))
         
-        except: 
+        except Exception as e:
+            app.logger.error(e) 
             flash('Unsuccessful update.')
             db.session.rollback()
             return redirect(url_for('edit_artist', artist_id=artist_id))
@@ -411,13 +451,15 @@ def shows():
         
         resp = []
         for show in shows:
+            venue = db.session.query(Venue).filter(Venue.id == show.venue_id).one_or_none()
+            artist = db.session.query(Artist).filter(Artist.id == show.artist_id).one_or_none()
             resp.append({   
                     'venue_id': show.venue_id,
-                    'venue_name': show.venue.name,
+                    'venue_name': venue.name,
                     'artist_id': show.artist_id,
-                    'artist_name': show.artist.name,
-                    'artist_image_link': show.artist.image_link,
-                    'start_time': str(show.start_time)
+                    'artist_name': artist.name,
+                    'artist_image_link': artist.image_link,
+                    'start_time': show.start_time.isoformat(),
             })       
         return render_template('pages/shows.html', shows=resp)
             
@@ -440,6 +482,7 @@ def create_show_submission():
 
     artist_id = form.artist_id.data
     venue_id = form.venue_id.data
+    start_time = form.start_time.data
 
     if form.validate():
         try:
@@ -454,22 +497,23 @@ def create_show_submission():
                 flash('Cannot create new show with non-existent venue. Create the new venue first.')
                 return redirect(url_for('create_venue_form'))
             
-        except:
+        except Exception as e:
+            app.logger.error(e)
             abort(500)
             
         finally:
             db.session.close()
 
         try:
-            new_show = Show()
-            form.populate_obj(new_show)
+            new_show = Show(venue_id=venue_id, artist_id=artist_id, start_time=start_time)
             db.session.add(new_show)
             db.session.commit()
             flash('Show was successfully listed!')
             return render_template('pages/home.html')
         
-        except:
+        except Exception as e:
             db.session.rollback()
+            app.logger.error(e)
             flash('An error occurred. Show could not be listed.')
             return redirect(url_for('create_show_form'))
             

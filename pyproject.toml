@@ -2,7 +2,7 @@
 name = "udacity-fullstack-orm-project"
 version = "0.1.0"
 description = ""
-authors = ["Tzu-Fan Tang <tang.tzufan@gmail.com>"]
+authors = ["Tzu-Fan Tang"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask_wtf import FlaskForm as Form
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField
-from wtforms.validators import DataRequired, InputRequired, URL, ValidationError
+from wtforms.validators import DataRequired, InputRequired, ValidationError
 from validate import is_valid_phone
 
 
@@ -88,7 +88,7 @@ class VenueForm(Form):
         'phone', validators=[InputRequired()]
     )
     image_link = StringField(
-        'image_link', validators=[URL()]
+        'image_link'
     )
     genres = SelectMultipleField(
         'genres', validators=[DataRequired()],
@@ -115,10 +115,10 @@ class VenueForm(Form):
         ]
     )
     facebook_link = StringField(
-        'facebook_link', validators=[URL()]
+        'facebook_link'
     )
     website_link = StringField(
-        'website_link', validators=[URL()]
+        'website_link'
     )
 
     seeking_talent = BooleanField('seeking_talent')
@@ -202,7 +202,7 @@ class ArtistForm(Form):
         'phone', validators=[InputRequired()]
     )
     image_link = StringField(
-        'image_link', validators=[URL()]
+        'image_link'
     )
     genres = SelectMultipleField(
         'genres', validators=[DataRequired()],
@@ -229,11 +229,11 @@ class ArtistForm(Form):
         ]
      )
     facebook_link = StringField(
-        'facebook_link', validators=[URL()]
+        'facebook_link'
      )
 
     website_link = StringField(
-        'website_link', validators=[URL()]
+        'website_link'
      )
 
     seeking_venue = BooleanField('seeking_venue')

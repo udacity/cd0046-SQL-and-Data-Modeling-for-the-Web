@@ -1,8 +1,8 @@
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import desc
 
 db = SQLAlchemy()
+
 
 class Artist(db.Model):
     __tablename__ = 'artist'
@@ -16,41 +16,49 @@ class Artist(db.Model):
     website = db.Column(db.String(120), nullable=True)
     seeking_venue = db.Column(db.Boolean, nullable=True, default=False)
     seeking_description = db.Column(db.String(), nullable=True)
-    past_shows = []
-    upcoming_shows = []
+    genres = db.Column(db.ARRAY(db.String(120)), nullable=False)
+
+    shows = db.relationship('Show', backref='artist', lazy='joined', cascade='all, delete')
     
-    genres = db.relationship('Genre', 
-                             back_populates='artist', 
-                             uselist=True)
-    shows = db.relationship('Show', backref='artist', lazy='joined', cascade='all,delete')
-    
-    def get_past_shows(self):
+    @property
+    def past_shows(self):
+        results = []
+        for show in self.shows:
+            if show.start_time < datetime.now():
+                results.append(show)
+
         data = []
-        results = self.shows.filter(Show.start_time < datetime.now()).order_by(desc(Show.start_time)).all()
         for result in results:
+            venue = db.session.query(Venue).filter(Venue.id == result.venue_id).one_or_none()
             data.append({
                 'venue_id': result.venue_id,
-                'venue_name': result.venue.name,
-                'venue_image_link': result.venue.image_link,
-                'start_time': str(result.start_time),
+                'venue_name': venue.name,
+                'venue_image_link': venue.image_link,
+                'start_time': result.start_time.isoformat(),
             })
+
         return data
     
-    def get_upcoming_shows(self):
+    @property
+    def upcoming_shows(self):
+        results = []
+        for show in self.shows:
+            if show.start_time > datetime.now():
+                results.append(show)
+        
         data = []
-        results = self.shows.filter(Show.start_time > datetime.now()).order_by(Show.start_time).all()
         for result in results:
+            venue = db.session.query(Venue).filter(Venue.id == result.venue_id).one_or_none()
             data.append({
                 'venue_id': result.venue_id,
-                'venue_name': result.venue.name,
-                'venue_image_link': result.venue.image_link,
-                'start_time': str(result.start_time),
+                'venue_name': venue.name,
+                'venue_image_link': venue.image_link,
+                'start_time': result.start_time.isoformat(),
             })
+
         return data
     
     def to_dict(self):
-        self.past_shows = self.get_past_shows()
-        self.upcoming_shows = self.get_upcoming_shows()
         return {
             'id': self.id,
             'name': self.name,
@@ -68,23 +76,9 @@ class Artist(db.Model):
             'past_shows_count': len(self.past_shows),
             'upcoming_shows_count': len(self.upcoming_shows),
         }
-        
-
-class Genre(db.Model):
-    __tablename__ = 'genre'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
     
-    artists = db.relationship('Artist', back_populates='genres', uselist=True)
-    venues = db.relationship('Venue', back_populates='genres', uselist=True)
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'artists': self.artists,
-            'venues': self.venues,
-        }
+    def __repr__(self):
+        return f'<Artist {self.id} {self.name}>'
 
 
 class Venue(db.Model):
@@ -94,45 +88,55 @@ class Venue(db.Model):
     city = db.Column(db.String(120), nullable=False)
     state = db.Column(db.String(120), nullable=False)
     address = db.Column(db.String(120), nullable=False)
-    phone = db.Column(db.String(120), nullable=True)
+    phone = db.Column(db.String(120), nullable=False)
     image_link = db.Column(db.String(500), nullable=True)
     facebook_link = db.Column(db.String(120), nullable=True)
     website = db.Column(db.String(120), nullable=True)
     seeking_talent = db.Column(db.Boolean, nullable=True, default=False)
     seeking_description = db.Column(db.String(120), nullable=True)
-    past_shows = []
-    upcoming_shows = []
+    genres = db.Column(db.ARRAY(db.String(120)), nullable=False)
+
+    shows = db.relationship('Show', backref='venue', lazy='joined', cascade='all, delete')
     
-    genres = db.relationship('Genre', back_populates='venues', uselist=True)
-    shows = db.relationship('Show', backref='venue', lazy='joined', cascade='all,delete')
-    
-    def get_past_shows(self):
+    @property
+    def past_shows(self):
+        results = []
+        for show in self.shows:
+            if show.start_time < datetime.now():
+                results.append(show)
+        
         data = []
-        results = self.shows.filter(Show.start_time < datetime.now()).order_by(desc(Show.start_time)).all()
         for result in results:
+            artist = db.session.query(Artist).filter(Artist.id == result.artist_id).one_or_none()
             data.append({
                 'artist_id': result.artist_id,
-                'artist_name': result.artist.name,
-                'artist_image_link': result.artist.image_link,
-                'start_time': str(result.start_time),
+                'artist_name': artist.name,
+                'artist_image_link': artist.image_link,
+                'start_time': result.start_time.strftime('%m/%d/%Y, %H:%M'),
             })
+
         return data
     
-    def get_upcoming_shows(self):
+    @property
+    def upcoming_shows(self):
+        results = []
+        for show in self.shows:
+            if show.start_time > datetime.now():
+                results.append(show)
+        
         data = []
-        results = self.shows.filter(Show.start_time > datetime.now()).order_by(Show.start_time).all()
         for result in results:
+            artist = db.session.query(Artist).filter(Artist.id == result.artist_id).one_or_none()
             data.append({
                 'artist_id': result.artist_id,
-                'artist_name': result.artist.name,
-                'artist_image_link': result.artist.image_link,
-                'start_time': str(result.start_time),
+                'artist_name': artist.name,
+                'artist_image_link': artist.image_link,
+                'start_time': result.start_time.strftime('%m/%d/%Y, %H:%M'),
             })
+            
         return data
     
     def to_dict(self):
-        self.past_shows = self.get_past_shows()
-        self.upcoming_shows = self.get_upcoming_shows()
         return {
             'id': self.id,
             'name': self.name,
@@ -150,22 +154,18 @@ class Venue(db.Model):
             'past_shows_count': len(self.past_shows),
             'upcoming_shows_count': len(self.upcoming_shows),
         }
-        
+    
+    def __repr__(self):
+        return f'<Venue {self.id} {self.name}>'
+    
 
 class Show(db.Model):
     __tablename__ = 'show'
     id = db.Column(db.Integer, primary_key=True)
+    venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable=False)
+    artist_id = db.Column(db.Integer, db.ForeignKey('artist.id'), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
-    artist_id = db.Column(db.Integer, db.ForeignKey('artist.id'))
-    venue_id = db.Column(db.Integer, db.ForeignKey('venue.id', ondelete='CASCADE'))
+
+    def __repr__(self):
+        return f'<Show {self.id} {self.start_time.strftime("%m/%d/%Y, %H:%M")}>'
     
-    artist = db.relationship('Artist', back_populates='show')
-    venue = db.relationship('Venue', back_populates='show')
-    
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'start_time': self.start_time,
-            'artist_id': self.artist_id,
-            'venue_id': self.venue_id,
-        }
