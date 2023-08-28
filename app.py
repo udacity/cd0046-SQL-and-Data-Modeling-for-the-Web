@@ -145,29 +145,39 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-    form = VenueForm(request.form)
-    venue_name = form.name.data.strip()
-    venue_city = form.city.data.strip()
-    try:
-        exists = db.session.query(Venue).filter(Venue.name == venue_name, Venue.city == venue_city).one_or_none()
-        if exists: 
-            flash(f'"{venue_name}" already exists in {venue_city}.')
-            return redirect(url_for('create_venue_form'))
+    form = VenueForm(request.form, meta={'csrf': False})
+    if form.validate():
+        name = form.name.data
+        city = form.city.data
+        try:
+            exists = db.session.query(Venue).filter(Venue.name == name, 
+                                                    Venue.city == city)\
+                                            .one_or_none()
+            if exists: 
+                flash(f'"{name}" already exists in {city}.')
+                return redirect(url_for('create_venue_form'))
+            
+            new_venue = form.populate_obj(Venue())
+            db.session.add(new_venue) 
+            db.session.commit()
+            flash(f'Venue "{name}" successfully listed!')
+            return render_template('pages/home.html')
         
-        new_venue = Venue()
-        form.populate_obj(new_venue)
-        db.session.add(new_venue) 
-        db.session.commit()
-        flash(f'Venue {venue_name} successfully listed!')
-        return render_template('pages/home.html')
+        except:
+            flash(f'An error occurred. Venue "{name}" could not be listed.')
+            db.session.rollback()
+            return redirect(url_for('create_venue_form'))
     
-    except:
-        flash(f'An error occurred. Venue {venue_name} could not be listed.')
-        db.session.rollback()
+        finally:
+            db.session.close()
+
+    else:
+        message = []
+        for field, errors in form.errors.items():
+            for err in errors:
+                message.append(f'{field}: {err}')
+        flash('Please fix the following errors: ' + ', '.join(message))
         return redirect(url_for('create_venue_form'))
-  
-    finally:
-        db.session.close()
         
 
 @app.route('/venues/<venue_id>/delete', methods=['POST'])	
@@ -195,7 +205,7 @@ def edit_venue(venue_id):
         if not venue:
             abort(404)
             
-        form = VenueForm(obj=venue)
+        form = VenueForm(object=venue)
         return render_template('forms/edit_venue.html', form=form, venue=venue)
     
     except:
@@ -207,21 +217,30 @@ def edit_venue(venue_id):
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
-    form = VenueForm(request.form)
-    try: 
-        venue = db.session.query(Venue).filter(Venue.id == venue_id)
-        venue = form.populate_obj(venue)
-        db.session.commit()
-        flash('Venue updated successfuly!')
-        return redirect(url_for('show_venue', venue_id=venue_id))
-    
-    except: 
-        flash('Unsuccessful update.')  
-        db.session.rollback()
-        return redirect(url_for('edit_venue', venue_id=venue_id))
+    form = VenueForm(request.form, meta={'csrf': False})
+    venue = db.session.query(Venue).filter(Venue.id == venue_id)
+    if form.validate():
+        try:
+            venue = form.populate_obj(venue)
+            db.session.commit()
+            flash('Venue updated successfuly!')
+            return redirect(url_for('show_venue', venue_id=venue_id))
         
-    finally: 
-        db.session.close()
+        except: 
+            flash('Unsuccessful update.')  
+            db.session.rollback()
+            return redirect(url_for('edit_venue', venue_id=venue_id))
+            
+        finally: 
+            db.session.close()
+
+    else:
+        message = []
+        for field, errors in form.errors.items():
+            for err in errors:
+                message.append(f'{field}: {err}')
+        flash('Please fix the following errors: ' + ', '.join(message))
+        return redirect(url_for('edit_venue', venue_id=venue_id))
 
 
 #  Artists
@@ -291,8 +310,48 @@ def show_artist(artist_id):
         abort(500)
         
     finally:
-        db.session.close()    
+        db.session.close()
 
+
+@app.route('/artists/create', methods=['GET']) 
+def create_artist_form():
+  form = ArtistForm()
+  return render_template('forms/new_artist.html', form=form)
+
+
+@app.route('/artists/create', methods=['POST'])
+def create_artist_submission():
+    form = ArtistForm(request.form, meta={'csrf': False})
+    name = form.name.data
+    if form.validate():
+        try:
+            exists = db.session.query(Artist).filter(Artist.name == name).one_or_none()
+            if exists: 
+                flash('This name is already in use.')
+                return redirect(url_for('create_artist_form'))
+            
+            new_artist = Artist()
+            form.populate_obj(new_artist)
+            db.session.add(new_artist) 
+            db.session.commit()
+            flash(f'Artist "{name}" was successfully listed!')
+            return redirect(url_for('show_artist', artist_id=new_artist.id))
+                
+        except:
+            flash(f'An error occurred. Artist "{name}" could not be listed.')
+            db.session.rollback()
+            return redirect(url_for('create_artist_form'))
+            
+        finally:
+            db.session.close()
+    else:
+        message = []
+        for field, errors in form.errors.items():
+            for err in errors:
+                message.append(f'{field}: {err}')
+        flash('Please fix the following errors: ' + ', '.join(message))
+        return redirect(url_for('create_artist_form'))
+    
 
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
@@ -301,7 +360,7 @@ def edit_artist(artist_id):
         if not artist:
             abort(404)
             
-        form = ArtistForm(obj=artist)
+        form = ArtistForm(object=artist)
         return render_template('forms/edit_artist.html', form=form, artist=artist)
     
     except:
@@ -313,55 +372,32 @@ def edit_artist(artist_id):
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
-    form = ArtistForm(request.form)
-    try: 
-        artist = db.session.query(Artist).filter(Artist.id == artist_id)
-        artist = form.populate_obj(artist)
-        db.session.commit()
-        flash('Artist successfully updated!')
-        return redirect(url_for('show_artist', artist_id=artist_id))
-    
-    except: 
-        flash('Unsuccessful update.')
-        db.session.rollback()
-        return redirect(url_for('edit_artist', artist_id=artist_id))
+    form = ArtistForm(request.form, meta={'csrf': False})
+    artist = db.session.query(Artist).filter(Artist.id == artist_id)
+    if form.validate():
+        try: 
+            artist = form.populate_obj(artist)
+            db.session.commit()
+            flash('Artist successfully updated!')
+            return redirect(url_for('show_artist', artist_id=artist_id))
         
-    finally: 
-        db.session.close()
-    
-    
-@app.route('/artists/create', methods=['GET']) 
-def create_artist_form():
-  form = ArtistForm()
-  return render_template('forms/new_artist.html', form=form)
-
-
-@app.route('/artists/create', methods=['POST'])
-def create_artist_submission():
-    form = ArtistForm(request.form)
-    artist_name = form.name.data.strip()
-    try:
-        exists = db.session.query(Artist).filter(Artist.name == artist_name).one_or_none()
-        if exists: 
-            flash('This name is already in use.')
-            return redirect(url_for('create_artist_form'))
-        
-        new_artist = Artist()
-        form.populate_obj(new_artist)
-        db.session.add(new_artist) 
-        db.session.commit()
-        flash(f'Artist {artist_name} was successfully listed!')
-        return redirect(url_for('show_artist', artist_id=new_artist.id))
+        except: 
+            flash('Unsuccessful update.')
+            db.session.rollback()
+            return redirect(url_for('edit_artist', artist_id=artist_id))
             
-    except:
-        flash(f'An error occurred. Artist {artist_name} could not be listed.')
-        db.session.rollback()
-        return redirect(url_for('create_artist_form'))
+        finally: 
+            db.session.close()
+
+    else:
+        message = []
+        for field, errors in form.errors.items():
+            for err in errors:
+                message.append(f'{field}: {err}')
+        flash('Please fix the following errors: ' + ', '.join(message))
+        return redirect(url_for('edit_artst', artist_id=artist_id))
         
-    finally:
-        db.session.close()
-
-
+    
 #  Shows
 #  ----------------------------------------------------------------
 
@@ -400,44 +436,53 @@ def create_show_form():
 
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
-    form = ShowForm(request.form)
+    form = ShowForm(request.form, meta={'csrf': False})
 
-    artist_id = form.artist_id.data.strip()
-    venue_id = form.venue_id.data.strip()
-    
-    try:
-        artist = db.session.query(Artist).filter(Artist.id == artist_id).one_or_none()
-        venue = db.session.query(Venue).filter(Venue.id == venue_id).one_or_none()
-    
-        if not artist:
-            flash('Cannot create new show with an unknown artist. Create the new artist first.')
-            return redirect(url_for('create_artist_form'))
+    artist_id = form.artist_id.data
+    venue_id = form.venue_id.data
+
+    if form.validate():
+        try:
+            artist = db.session.query(Artist).filter(Artist.id == artist_id).one_or_none()
+            venue = db.session.query(Venue).filter(Venue.id == venue_id).one_or_none()
+        
+            if not artist:
+                flash('Cannot create new show with non-existent artist. Create the new artist first.')
+                return redirect(url_for('create_artist_form'))
+                
+            elif not venue:
+                flash('Cannot create new show with non-existent venue. Create the new venue first.')
+                return redirect(url_for('create_venue_form'))
             
-        elif not venue:
-            flash('Cannot create new show with an unknown venue. Create the new venue first.')
-            return redirect(url_for('create_venue_form'))
-        
-    except:
-        abort(500)
-        
-    finally:
-        db.session.close()
+        except:
+            abort(500)
+            
+        finally:
+            db.session.close()
 
-    try:
-        new_show = Show()
-        form.populate_obj(new_show)
-        db.session.add(new_show)
-        db.session.commit()
-        flash('Show was successfully listed!')
-        return render_template('pages/home.html')
-    
-    except:
-        db.session.rollback()
-        flash('An error occurred. Show could not be listed.')
-        return redirect(url_for('create_show_form'))
+        try:
+            new_show = Show()
+            form.populate_obj(new_show)
+            db.session.add(new_show)
+            db.session.commit()
+            flash('Show was successfully listed!')
+            return render_template('pages/home.html')
         
-    finally:
-        db.session.close() 
+        except:
+            db.session.rollback()
+            flash('An error occurred. Show could not be listed.')
+            return redirect(url_for('create_show_form'))
+            
+        finally:
+            db.session.close() 
+    
+    else:
+        message = []
+        for field, errors in form.errors.items():
+            for err in errors:
+                message.append(f'{field}: {err}')
+        flash('Please fix the following errors: ' + ', '.join(message))
+        return redirect(url_for('create_show_form'))
 
 
 #  Error handlers
