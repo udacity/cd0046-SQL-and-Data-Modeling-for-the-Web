@@ -1,4 +1,9 @@
 import os
+
+# DB_USER = os.environ.get('DB_USER', 'postgres')
+# DB_HOST = os.environ.get('DB_HOST', 'localhost:5432')
+# DB_NAME = os.environ.get('DB_NAME', 'fyyur')
+
 SECRET_KEY = os.urandom(32)
 # Grabs the folder where the script runs.
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -6,8 +11,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # Enable debug mode.
 DEBUG = True
 
-# Connect to the database
-
-
 # TODO IMPLEMENT DATABASE URL
-SQLALCHEMY_DATABASE_URI = '<Put your local database url>'
+# SQLALCHEMY_DATABASE_URI = 'postgresql://{}@{}/{}'.format(DB_USER, DB_HOST, DB_NAME)
+SQLALCHEMY_DATABASE_URI = 'postgresql:///fyyur'
