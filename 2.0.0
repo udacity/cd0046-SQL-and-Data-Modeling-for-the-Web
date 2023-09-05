@@ -1,0 +1,8 @@
+Collecting Werkzeug>=2.3.7
+  Using cached werkzeug-2.3.7-py3-none-any.whl (242 kB)
+Installing collected packages: Werkzeug
+  Attempting uninstall: Werkzeug
+    Found existing installation: Werkzeug 2.0.3
+    Uninstalling Werkzeug-2.0.3:
+      Successfully uninstalled Werkzeug-2.0.3
+Successfully installed Werkzeug-2.3.7
