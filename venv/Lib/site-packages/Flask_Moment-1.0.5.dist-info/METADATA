@@ -1,0 +1,32 @@
+Metadata-Version: 2.1
+Name: Flask-Moment
+Version: 1.0.5
+Summary: Formatting of dates and times in Flask templates using moment.js.
+Home-page: https://github.com/miguelgrinberg/flask-moment
+Author: Miguel Grinberg
+Author-email: miguel.grinberg@gmail.com
+Project-URL: Bug Tracker, https://github.com/miguelgrinberg/flask-moment/issues
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: Flask
+Requires-Dist: packaging (>=14.1)
+
+Flask-Moment
+============
+
+[![Build status](https://github.com/miguelgrinberg/flask-moment/workflows/build/badge.svg)](https://github.com/miguelgrinberg/flask-moment/actions) [![codecov](https://codecov.io/gh/miguelgrinberg/flask-moment/branch/main/graph/badge.svg)](https://codecov.io/gh/miguelgrinberg/flask-moment)
+
+This extension enhances Jinja2 templates with formatting of dates and times
+using [moment.js](https://momentjs.com/).
+
+Resources
+---------
+
+-  [Documentation](http://flask-moment.readthedocs.io/en/latest/)
+-  [PyPI](https://pypi.python.org/pypi/flask-moment)
+-  [Change Log](https://github.com/miguelgrinberg/flask-moment/blob/main/CHANGES.md)
