@@ -1,0 +1,16 @@
+{
+  "name": "cd0046-sql-and-data-modeling-for-the-web",
+  "version": "1.0.0",
+  "description": "Fyyur -----",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^3.4.1"
+  }
+}
+
