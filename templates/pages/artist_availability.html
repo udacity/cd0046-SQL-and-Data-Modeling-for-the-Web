@@ -1,0 +1,193 @@
+{% extends 'layouts/main.html' %}
+{% block title %}{{ artist.name }} | Availability{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-sm-12">
+    <h1 class="monospace">{{ artist.name }}'s Availability Schedule</h1>
+    <p class="subtitle">Manage when you're available to perform</p>
+  </div>
+</div>
+
+<!-- Help Info Box -->
+<div class="alert alert-info" style="margin-top: 1rem; margin-bottom: 1.5rem;">
+  <div style="display: flex; align-items: start; gap: 1rem;">
+    <div style="flex: 1;">
+      <strong>💡 How Availability Works</strong>
+      <p style="margin-top: 0.5rem; margin-bottom: 0;">
+        <strong>Blackout slots always win:</strong> If you mark any time as "Unavailable" (blackout), that takes priority over "Available" slots. 
+        <strong>Date exceptions override weekly recurring.</strong> 
+        <a href="#" data-toggle="modal" data-target="#helpModal" style="text-decoration: underline;">Learn more →</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Help Modal -->
+<div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="helpModalLabel">How Availability Works</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h6><strong>Priority Rules</strong></h6>
+        <p style="font-size: 0.95em;">
+          The system checks your availability in this order:
+        </p>
+        <ol style="font-size: 0.95em;">
+          <li><strong>Date Exceptions (highest priority)</strong> - Overrides everything. Use for holidays, tours, or specific date changes.</li>
+          <li><strong>Weekly Recurring Slots</strong> - Your default schedule. Can mark as available or unavailable (blackout).</li>
+          <li><strong>Double-booking Protection (lowest priority)</strong> - Prevents booking you for overlapping shows.</li>
+        </ol>
+
+        <h6 style="margin-top: 1.5rem;"><strong>Blackout Always Wins</strong></h6>
+        <p style="font-size: 0.95em;">
+          If you have overlapping Available and Unavailable slots for the same time, the Unavailable (blackout) takes priority.
+        </p>
+        <div style="background: #f5f5f5; padding: 1rem; border-radius: 4px; font-size: 0.9em; font-family: monospace;">
+          <strong>Example:</strong><br>
+          Monday: 09:00-17:00 <span style="color: green;">Available</span><br>
+          Monday: 12:00-13:00 <span style="color: red;">Unavailable</span> (lunch break)<br>
+          <br>
+          <strong>Result:</strong><br>
+          ✅ Can book 09:00-12:00<br>
+          ✅ Can book 13:00-17:00<br>
+          ❌ Cannot book 12:00-13:00 (blackout)<br>
+          ❌ Cannot book 11:30-12:30 (overlaps blackout)
+        </div>
+
+        <h6 style="margin-top: 1.5rem;"><strong>Date Exceptions Example</strong></h6>
+        <p style="font-size: 0.95em;">
+          On a specific date, exceptions override your weekly schedule:
+        </p>
+        <div style="background: #f5f5f5; padding: 1rem; border-radius: 4px; font-size: 0.9em;">
+          <strong>Scenario:</strong><br>
+          You're normally available Monday 09:00-17:00<br>
+          But Sept 2 (a Monday) you're at a festival<br>
+          <br>
+          <strong>Solution:</strong> Add a Date Exception for Sept 2, mark it "Unavailable" for the entire day (00:00-23:59)<br>
+          <br>
+          <strong>Result:</strong> On Sept 2, you're completely unavailable despite being normally available on Mondays
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <h2 class="monospace">Weekly Recurring Availability</h2>
+  <p>Your default weekly schedule for performances</p>
+  
+  {% if weekly_availability %}
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Time Slot</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for slot in weekly_availability %}
+          <tr>
+            <td>
+              {% set day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+              <strong>{{ day_names[slot.day_of_week] }}</strong>
+            </td>
+            <td>
+              {{ slot.start_time.strftime('%H:%M') }} - {{ slot.end_time.strftime('%H:%M') }}
+            </td>
+            <td>
+              {% if slot.is_available %}
+                <span class="badge badge-success">Available</span>
+              {% else %}
+                <span class="badge badge-danger">Unavailable</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="/artists/{{ artist.id }}/availability/{{ slot.id }}/edit" class="btn btn-sm btn-info">Edit</a>
+              <form method="post" action="/artists/{{ artist.id }}/availability/{{ slot.id }}/delete" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this availability slot?');">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="alert alert-info">No recurring availability set yet</p>
+  {% endif %}
+  
+  <a href="/artists/{{ artist.id }}/availability/new" class="btn btn-primary">Add Availability Slot</a>
+</section>
+
+<section style="margin-top: 2rem;">
+  <h2 class="monospace">Date Exceptions</h2>
+  <p>Holidays, tours, and specific date overrides</p>
+  
+  {% if exceptions %}
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time Slot</th>
+            <th>Status</th>
+            <th>Reason</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for exception in exceptions %}
+          <tr>
+            <td>
+              <strong>{{ exception.exception_date.strftime('%Y-%m-%d') }}</strong>
+            </td>
+            <td>
+              {{ exception.start_time.strftime('%H:%M') }} - {{ exception.end_time.strftime('%H:%M') }}
+            </td>
+            <td>
+              {% if exception.is_available %}
+                <span class="badge badge-success">Available</span>
+              {% else %}
+                <span class="badge badge-danger">Unavailable</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if exception.reason %}
+                {{ exception.reason }}
+              {% else %}
+                <em>No reason provided</em>
+              {% endif %}
+            </td>
+            <td>
+              <a href="/artists/{{ artist.id }}/availability/exception/{{ exception.id }}/edit" class="btn btn-sm btn-info">Edit</a>
+              <form method="post" action="/artists/{{ artist.id }}/availability/exception/{{ exception.id }}/delete" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this exception?');">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="alert alert-info">No date exceptions set</p>
+  {% endif %}
+  
+  <a href="/artists/{{ artist.id }}/availability/exception/new" class="btn btn-primary">Add Exception</a>
+</section>
+
+<div style="margin-top: 2rem;">
+  <a href="/artists/{{ artist.id }}" class="btn btn-secondary">Back to Profile</a>
+</div>
+{% endblock %}

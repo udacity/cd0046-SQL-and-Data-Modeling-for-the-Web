@@ -7,7 +7,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 DEBUG = True
 
 # Connect to the database
+# For local development: postgresql://postgres:password@localhost:5432/fyyur
+# For Docker dev container: set via environment variable (see docker-compose.yml)
+SQLALCHEMY_DATABASE_URI = os.getenv(
+    'SQLALCHEMY_DATABASE_URI',
+    'postgresql://postgres:postgres@localhost:5432/fyyur'
+)
 
-
-# TODO IMPLEMENT DATABASE URL
-SQLALCHEMY_DATABASE_URI = '<Put your local database url>'
+SQLALCHEMY_TRACK_MODIFICATIONS = False

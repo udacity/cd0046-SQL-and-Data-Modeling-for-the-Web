@@ -1,0 +1,68 @@
+{% extends 'layouts/main.html' %}
+{% block title %}Create Album{% endblock %}
+{% block content %}
+  <div class="form-wrapper">
+    <form method="post" class="form" action="/albums/create">
+      {{ form.hidden_tag() }}
+      <h3 class="form-heading">Create a New Album <a href="{{ url_for('main.index') }}" title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
+      
+      <div class="form-group">
+        {% if artist_id %}
+        <!-- When coming from artist page, use hidden field -->
+        <input type="hidden" name="artist_id" value="{{ artist_id }}">
+        <label>Artist</label>
+        <p class="form-control-static"><strong>{{ artist_name }}</strong></p>
+        {% else %}
+        <!-- When creating album from albums page, show dropdown -->
+        <label for="artist_id">Artist</label>
+        {{ form.artist_id(class_='form-control') }}
+        {% endif %}
+        {% if form.artist_id.errors %}
+          <div class="text-danger"><small>{{ form.artist_id.errors[0] }}</small></div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="title">Album Title</label>
+        {{ form.title(class_='form-control', autofocus=true, value=data.get('title', '')) }}
+        {% if form.title.errors %}
+          <div class="text-danger"><small>{{ form.title.errors[0] }}</small></div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="release_date">Release Date (YYYY-MM-DD)</label>
+        {{ form.release_date(class_='form-control', placeholder='2024-01-15', value=data.get('release_date', '')) }}
+        {% if form.release_date.errors %}
+          <div class="text-danger"><small>{{ form.release_date.errors[0] }}</small></div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        {{ form.description(class_='form-control', rows=5, placeholder='Album notes, credits, or description...', value=data.get('description', '')) }}
+        {% if form.description.errors %}
+          <div class="text-danger"><small>{{ form.description.errors[0] }}</small></div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="image_link">Album Cover Image URL</label>
+        {{ form.image_link(class_='form-control', placeholder='https://...', value=data.get('image_link', '')) }}
+        {% if form.image_link.errors %}
+          <div class="text-danger"><small>{{ form.image_link.errors[0] }}</small></div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="spotify_link">Spotify Album Link</label>
+        {{ form.spotify_link(class_='form-control', placeholder='https://open.spotify.com/album/...', value=data.get('spotify_link', '')) }}
+        {% if form.spotify_link.errors %}
+          <div class="text-danger"><small>{{ form.spotify_link.errors[0] }}</small></div>
+        {% endif %}
+      </div>
+
+      <input type="submit" value="Create Album" class="btn btn-primary btn-lg btn-block">
+    </form>
+  </div>
+{% endblock %}

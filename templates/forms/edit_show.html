@@ -1,0 +1,74 @@
+{% extends 'layouts/main.html' %}
+
+{% block title %}Edit Show{% endblock %}
+
+{% block content %}
+  <div class="form-wrapper">
+    <form method="post" class="form">
+      <h3 class="form-heading">Edit Show</h3>
+      
+      <div class="form-group">
+        <label for="venue_id">Venue</label>
+        <small>Select a venue from the list</small>
+        {% if form.venue_id.errors %}
+          {{ form.venue_id(class_ = 'form-control is-invalid') }}
+          <div class="invalid-feedback d-block">
+            {% for error in form.venue_id.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.venue_id(class_ = 'form-control') }}
+        {% endif %}
+      </div>
+      
+      <div class="form-group">
+        <label for="artist_id">Artist</label>
+        <small>Select an artist from the list</small>
+        {% if form.artist_id.errors %}
+          {{ form.artist_id(class_ = 'form-control is-invalid') }}
+          <div class="invalid-feedback d-block">
+            {% for error in form.artist_id.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.artist_id(class_ = 'form-control') }}
+        {% endif %}
+      </div>
+      
+      <div class="form-group">
+        <label for="start_time">Start Time</label>
+        <small>Select date and time for the show</small>
+        {% if form.start_time.errors %}
+          <input type="datetime-local" id="start_time" name="start_time" class="form-control is-invalid" value="{{ form.start_time.data.strftime('%Y-%m-%dT%H:%M') if form.start_time.data else '' }}" step="900" required>
+          <div class="invalid-feedback d-block">
+            {% for error in form.start_time.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          <input type="datetime-local" id="start_time" name="start_time" class="form-control" value="{{ form.start_time.data.strftime('%Y-%m-%dT%H:%M') if form.start_time.data else '' }}" step="900" required>
+        {% endif %}
+      </div>
+      
+      <div class="form-group">
+        <label for="end_time">End Time</label>
+        <small>Select end date and time for the show (optional, defaults to 2 hours after start)</small>
+        {% if form.end_time.errors %}
+          <input type="datetime-local" id="end_time" name="end_time" class="form-control is-invalid" value="{{ form.end_time.data.strftime('%Y-%m-%dT%H:%M') if form.end_time.data else '' }}" step="900">
+          <div class="invalid-feedback d-block">
+            {% for error in form.end_time.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          <input type="datetime-local" id="end_time" name="end_time" class="form-control" value="{{ form.end_time.data.strftime('%Y-%m-%dT%H:%M') if form.end_time.data else '' }}" step="900">
+        {% endif %}
+      </div>
+      
+      <input type="submit" value="Update Show" class="btn btn-primary btn-lg btn-block">
+    </form>
+  </div>
+{% endblock %}
+

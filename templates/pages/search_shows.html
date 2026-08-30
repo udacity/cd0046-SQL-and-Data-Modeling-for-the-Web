@@ -1,0 +1,38 @@
+{% extends "layouts/main.html" %}
+
+{% block title %}Show Search Results{% endblock %}
+
+{% block content %}
+<div class="search-results">
+    <h1>Show Search Results</h1>
+    
+    {% if results.count == 0 %}
+        <p>No shows found matching your search.</p>
+    {% else %}
+        <p>Found {{ results.count }} show(s)</p>
+        
+        <div class="shows-list">
+            {% for show in results.data %}
+                <div class="show-card">
+                    <h3>
+                        <a href="{{ url_for('shows.show_show', show_id=show.id) }}">
+                            Show #{{ show.id }}
+                        </a>
+                    </h3>
+                    {% if show.artist %}
+                        <p><strong>Artist:</strong> {{ show.artist.name }}</p>
+                    {% endif %}
+                    {% if show.venue %}
+                        <p><strong>Venue:</strong> {{ show.venue.name }}</p>
+                    {% endif %}
+                    {% if show.start_time %}
+                        <p><strong>Start Time:</strong> {{ show.start_time }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <a href="{{ url_for('shows.shows') }}" class="btn btn-secondary">Back to All Shows</a>
+</div>
+{% endblock %}

@@ -187,3 +187,74 @@ Navigate to project homepage [http://127.0.0.1:5000/](http://127.0.0.1:5000/) or
   - `using pip install --upgrade flask-moment`
   - `Using pip install Werkzeug==2.0.0`
   - `Using pip uninstall Flask and then pip install flask==2.0.3`
+
+---
+
+## Documentation
+
+Comprehensive documentation is available in the `docs/` directory:
+
+### [docs/MANUAL_TESTING_GUIDE.md](docs/MANUAL_TESTING_GUIDE.md)
+Step-by-step manual testing procedures for all features. Includes test cases for:
+- Artist and Venue management (create, edit, delete, search)
+- Album and Song organization
+- Show booking and scheduling
+- Data integrity and edge cases
+- UI/UX testing
+- Complete test checklist
+
+### [docs/HOW_TO_GUIDE.md](docs/HOW_TO_GUIDE.md)
+Practical how-to guide for developers and users:
+- Setup and running the application
+- Managing artist and venue profiles
+- Creating and organizing music (albums/songs)
+- Booking shows
+- Managing availability
+- Troubleshooting common issues
+
+### [docs/BUSINESS_DECISIONS.md](docs/BUSINESS_DECISIONS.md)
+Architectural and business decisions documentation:
+- Core business entities and logic
+- Database design decisions
+- API and form design patterns
+- Data integrity strategies
+- Testing approach
+- Security decisions
+- Future enhancement opportunities
+
+### [docs/SITE_DOCUMENTATION.md](docs/SITE_DOCUMENTATION.md)
+Technical documentation for developers:
+- Project overview and technology stack
+- Complete project structure
+- Database schema details
+- Key components and design patterns
+- Full API endpoint reference
+- Development workflow and best practices
+- Deployment considerations
+- Performance optimization strategies
+
+---
+
+## Quick Start Commands
+
+```bash
+# Install dependencies
+make install
+
+# Run development server
+make run
+
+# Run tests with coverage
+make test-cov
+
+# Initialize database
+make db-init
+
+# Seed database with sample data
+make db-seed
+
+# Reset database
+make db-reset
+```
+
+All available commands are defined in the `Makefile`. Run `make help` to see a full list.

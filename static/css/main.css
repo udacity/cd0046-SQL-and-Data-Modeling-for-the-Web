@@ -197,6 +197,32 @@ h2.monospace {
 .form-wrapper {
   max-width: 400px;
 }
+.form-section {
+  background: #f9f9f9;
+  padding: 25px;
+  border-radius: 8px;
+  border: 1px solid #ebebeb;
+  margin-bottom: 30px;
+}
+.form-section h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+}
+.form-section .form-group {
+  margin-bottom: 15px;
+}
+.form-section .form-group label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+.form-section button {
+  margin-top: 10px;
+}
+.form-section select[multiple] {
+  min-height: 120px;
+}
 .form-inline {
   font-size: 0;
 }
@@ -208,4 +234,60 @@ h2.monospace {
 }
 .subtitle {
   opacity: 0.5;
+}
+/* Section headers with action buttons */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.section-header h2 {
+  margin: 0;
+}
+.section-header .btn {
+  font-size: 14px;
+  padding: 5px 12px;
+}
+
+/* Error alert styling - make errors more prominent with red color */
+.alert-block.alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+.alert-block.alert-danger .close {
+  color: #721c24;
+}
+.invalid-feedback {
+  color: #dc3545;
+  font-weight: 500;
+  margin-top: 5px;
+}
+.is-invalid {
+  border-color: #dc3545;
+}
+.is-invalid:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Artist availability display */
+.availability-section {
+  background-color: #e8f4f8;
+  border-left: 4px solid #17a2b8;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 4px;
+}
+.availability-section h4 {
+  margin-top: 0;
+  color: #17a2b8;
+}
+.availability-item {
+  padding: 5px 0;
+}
+.availability-item strong {
+  display: inline-block;
+  width: 120px;
 }

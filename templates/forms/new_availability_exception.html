@@ -1,0 +1,86 @@
+{% extends 'layouts/main.html' %}
+{% block title %}Availability Exception{% endblock %}
+{% block content %}
+  <div class="form-wrapper">
+    <form method="post" class="form">
+      {{ form.hidden_tag() }}
+      <h3 class="form-heading">Create Availability Exception</h3>
+      <p class="subtitle">Override your schedule for a specific date (holiday, tour, studio session, etc.)</p>
+      
+      <div class="form-group">
+        <label for="exception_date">Date</label>
+        <small>Select the date for this exception</small>
+        {% if form.exception_date.errors %}
+          <input type="date" id="exception_date" name="exception_date" class="form-control is-invalid" value="{{ form.exception_date.data.strftime('%Y-%m-%d') if form.exception_date.data else '' }}" required>
+          <div class="invalid-feedback d-block">
+            {% for error in form.exception_date.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          <input type="date" id="exception_date" name="exception_date" class="form-control" value="{{ form.exception_date.data.strftime('%Y-%m-%d') if form.exception_date.data else '' }}" required>
+        {% endif %}
+      </div>
+      
+      <div class="form-group">
+        <label for="start_time">Start Time</label>
+        <small>Start time for this exception (HH:MM)</small>
+        {% if form.start_time.errors %}
+          <input type="time" id="start_time" name="start_time" class="form-control is-invalid" value="{{ form.start_time.data.strftime('%H:%M') if form.start_time.data else '' }}" required>
+          <div class="invalid-feedback d-block">
+            {% for error in form.start_time.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          <input type="time" id="start_time" name="start_time" class="form-control" value="{{ form.start_time.data.strftime('%H:%M') if form.start_time.data else '' }}" required>
+        {% endif %}
+      </div>
+      
+      <div class="form-group">
+        <label for="end_time">End Time</label>
+        <small>End time for this exception (HH:MM)</small>
+        {% if form.end_time.errors %}
+          <input type="time" id="end_time" name="end_time" class="form-control is-invalid" value="{{ form.end_time.data.strftime('%H:%M') if form.end_time.data else '' }}" required>
+          <div class="invalid-feedback d-block">
+            {% for error in form.end_time.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          <input type="time" id="end_time" name="end_time" class="form-control" value="{{ form.end_time.data.strftime('%H:%M') if form.end_time.data else '' }}" required>
+        {% endif %}
+      </div>
+      
+      <div class="form-group">
+        <div class="form-check">
+          {% if form.is_available.data %}
+            {{ form.is_available(class_='form-check-input', checked=true) }}
+          {% else %}
+            {{ form.is_available(class_='form-check-input') }}
+          {% endif %}
+          <label class="form-check-label" for="is_available">
+            Available on this date (checked = available; unchecked = not available)
+          </label>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="reason">Reason (Optional)</label>
+        <small>Why you're unavailable or the nature of availability. Examples: Holiday, Tour, Studio Session, Special Show</small>
+        {% if form.reason.errors %}
+          {{ form.reason(class_='form-control is-invalid', placeholder='e.g., Holiday, Tour, Studio Session') }}
+          <div class="invalid-feedback d-block">
+            {% for error in form.reason.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.reason(class_='form-control', placeholder='e.g., Holiday, Tour, Studio Session') }}
+        {% endif %}
+      </div>
+      
+      <input type="submit" value="Save Exception" class="btn btn-primary btn-lg btn-block">
+    </form>
+  </div>
+{% endblock %}

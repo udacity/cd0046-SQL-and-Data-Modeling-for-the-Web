@@ -52,35 +52,11 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li>
-              {% if (request.endpoint == 'venues') or
-                (request.endpoint == 'search_venues') or
-                (request.endpoint == 'show_venue') %}
-              <form class="search" method="post" action="/venues/search">
-                <input class="form-control"
-                  type="search"
-                  name="search_term"
-                  placeholder="Find a venue"
-                  aria-label="Search">
-              </form>
-              {% endif %}
-              {% if (request.endpoint == 'artists') or
-                (request.endpoint == 'search_artists') or
-                (request.endpoint == 'show_artist') %}
-              <form class="search" method="post" action="/artists/search">
-                <input class="form-control"
-                  type="search"
-                  name="search_term"
-                  placeholder="Find an artist"
-                  aria-label="Search">
-              </form>
-              {% endif %}
-            </li>
-          </ul>
           <ul class="nav navbar-nav">
-            <li {% if request.endpoint == 'venues' %} class="active" {% endif %}><a href="{{ url_for('venues') }}">Venues</a></li>
-            <li {% if request.endpoint == 'artists' %} class="active" {% endif %}><a href="{{ url_for('artists') }}">Artists</a></li>
-            <li {% if request.endpoint == 'shows' %} class="active" {% endif %}><a href="{{ url_for('shows') }}">Shows</a></li>
+            <li {% if request.endpoint == 'venues.venues' %} class="active" {% endif %}><a href="{{ url_for('venues.venues') }}">Venues</a></li>
+            <li {% if request.endpoint == 'artists.artists' %} class="active" {% endif %}><a href="{{ url_for('artists.artists') }}">Artists</a></li>
+            <li {% if request.endpoint == 'shows.shows' %} class="active" {% endif %}><a href="{{ url_for('shows.shows') }}">Shows</a></li>
+            <li {% if request.endpoint == 'albums.albums' %} class="active" {% endif %}><a href="{{ url_for('albums.albums') }}">Albums</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -89,10 +65,16 @@
     <!-- Begin page content -->
     <main id="content" role="main" class="container">
 
-      {% with messages = get_flashed_messages() %}
+      {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-          {% for message in messages %}
-            <div class="alert alert-block alert-info fade in">
+          {% for category, message in messages %}
+            {% if category == 'error' %}
+              <div class="alert alert-block alert-danger fade in">
+            {% elif category == 'success' %}
+              <div class="alert alert-block alert-success fade in">
+            {% else %}
+              <div class="alert alert-block alert-info fade in">
+            {% endif %}
               <a class="close" data-dismiss="alert">&times;</a>
               {{ message }}
             </div>

@@ -1,0 +1,54 @@
+{% extends 'layouts/main.html' %}
+{% block title %}Edit Song{% endblock %}
+{% block content %}
+  <div class="form-wrapper">
+    <form method="post" class="form" action="/songs/{{ song.id }}/edit">
+      {{ form.hidden_tag() }}
+      <h3 class="form-heading">Edit Song: "{{ song.title }}" <a href="{{ url_for('main.index') }}" title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
+      
+      <p class="text-muted"><small>Album: <a href="/albums/{{ album.id }}">{{ album.title }}</a></small></p>
+
+      <div class="form-group">
+        <label for="title">Song Title</label>
+        {{ form.title(class_='form-control', autofocus=true) }}
+        {% if form.title.errors %}
+          <div class="text-danger"><small>{{ form.title.errors[0] }}</small></div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="track_number">Track Number</label>
+        {{ form.track_number(class_='form-control', placeholder='1, 2, 3, etc.') }}
+        {% if form.track_number.errors %}
+          <div class="text-danger"><small>{{ form.track_number.errors[0] }}</small></div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="duration">Duration (seconds)</label>
+        {{ form.duration(class_='form-control', placeholder='180 for 3:00') }}
+        {% if form.duration.errors %}
+          <div class="text-danger"><small>{{ form.duration.errors[0] }}</small></div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="genre">Genre</label>
+        {{ form.genre(class_='form-control', placeholder='Rock, Pop, Jazz, etc.') }}
+        {% if form.genre.errors %}
+          <div class="text-danger"><small>{{ form.genre.errors[0] }}</small></div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="spotify_link">Spotify Track Link</label>
+        {{ form.spotify_link(class_='form-control', placeholder='https://open.spotify.com/track/...') }}
+        {% if form.spotify_link.errors %}
+          <div class="text-danger"><small>{{ form.spotify_link.errors[0] }}</small></div>
+        {% endif %}
+      </div>
+
+      <input type="submit" value="Update Song" class="btn btn-primary btn-lg btn-block">
+    </form>
+  </div>
+{% endblock %}

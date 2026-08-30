@@ -1,7 +1,44 @@
 {% extends 'layouts/main.html' %}
 {% block title %}Fyyur | Venues Search{% endblock %}
 {% block content %}
-<h3>Number of search results for "{{ search_term }}": {{ results.count }}</h3>
+<!-- Venue Search Form -->
+<div class="form-section">
+	<h2>Search Venues</h2>
+	<form method="post" action="/venues/search" id="venue-search-form">
+		<div class="form-group">
+			<label for="search_term">Venue Name</label>
+			<input class="form-control" type="text" id="search_term" name="search_term" placeholder="Partial name search..." value="{{ search_term or '' }}" />
+		</div>
+		<div class="form-group">
+			<label for="city">City</label>
+			<input class="form-control" type="text" id="city" name="city" placeholder="Partial city search..." value="{{ city or '' }}" />
+		</div>
+		<div class="form-group">
+			<label for="state">State</label>
+			<select class="form-control" id="state" name="state">
+				<option value="">-- Any State --</option>
+				{% for state_code, state_name in states %}
+				<option value="{{ state_code }}" {% if state_code == state %}selected{% endif %}>{{ state_name }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="genres">Genres</label>
+			<small>Hold Ctrl/Cmd to select multiple</small>
+			<select class="form-control" id="genres" name="genres" multiple>
+				{% for genre_code, genre_name in genre_choices %}
+				<option value="{{ genre_name }}" {% if genre_name in genres %}selected{% endif %}>{{ genre_name }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<button type="submit" class="btn btn-primary">Search</button>
+	</form>
+</div>
+
+<hr />
+
+<!-- Search Results -->
+<h3>Search results for {{ search_label }}: {{ results.count }} venue(s) found</h3>
 <ul class="items">
 	{% for venue in results.data %}
 	<li>
@@ -9,6 +46,7 @@
 			<i class="fas fa-music"></i>
 			<div class="item">
 				<h5>{{ venue.name }}</h5>
+				<h6>{{ venue.city }}, {{ venue.state }}</h6>
 			</div>
 		</a>
 	</li>

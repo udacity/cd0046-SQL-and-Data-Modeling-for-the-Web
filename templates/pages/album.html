@@ -1,0 +1,100 @@
+{% extends 'layouts/main.html' %}
+{% block title %}{{ album.title }} | Album{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-sm-4">
+    {% if album.image_link %}
+    <img src="{{ album.image_link }}" alt="{{ album.title }}" class="album-cover" />
+    {% else %}
+    <div class="album-cover-placeholder" style="width: 100%; height: 300px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+      <i class="fas fa-music" style="font-size: 4rem;"></i>
+    </div>
+    {% endif %}
+  </div>
+  <div class="col-sm-8">
+    <h1 class="monospace">{{ album.title }}</h1>
+    <p class="subtitle">
+      by <a href="/artists/{{ album.artist_id }}">{{ album.artist_name }}</a>
+    </p>
+    {% if album.release_date %}
+    <p>
+      <i class="fas fa-calendar"></i> Released: {{ album.release_date.strftime('%B %d, %Y') }}
+    </p>
+    {% endif %}
+    {% if album.description %}
+    <div class="album-description">
+      <h5>About</h5>
+      <p>{{ album.description }}</p>
+    </div>
+    {% endif %}
+    <p>
+      <strong>{{ album.song_count() }}</strong> {% if album.song_count() == 1 %}Song{% else %}Songs{% endif %} • 
+      <strong>{{ album.format_total_duration() }}</strong> Total Duration
+    </p>
+    {% if album.spotify_link %}
+    <a href="{{ album.spotify_link }}" class="btn btn-success" target="_blank">
+      <i class="fab fa-spotify"></i> Listen on Spotify
+    </a>
+    {% endif %}
+    <a href="/albums/{{ album.id }}/edit" class="btn btn-primary">Edit Album</a>
+    <form method="post" action="/albums/{{ album.id }}/delete" style="display:inline;">
+      <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?');">Delete Album</button>
+    </form>
+  </div>
+</div>
+
+<section>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin: 2rem 0 1rem 0;">
+    <h2>Tracklist</h2>
+    <a href="/songs/create?album_id={{ album.id }}" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Add Song</a>
+  </div>
+  
+  {% if album.songs %}
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Genre</th>
+          <th>Duration</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for song in album.songs %}
+        <tr>
+          <td>{{ song.track_number or '-' }}</td>
+          <td>
+            {% if song.spotify_link %}
+            <a href="{{ song.spotify_link }}" target="_blank">
+              {{ song.title }} <i class="fab fa-spotify"></i>
+            </a>
+            {% else %}
+            {{ song.title }}
+            {% endif %}
+          </td>
+          <td>{{ song.genre or '-' }}</td>
+          <td>{{ song.format_duration() }}</td>
+          <td>
+            <a href="/songs/{{ song.id }}/edit" class="btn btn-sm btn-secondary">Edit</a>
+            <form method="post" action="/songs/{{ song.id }}/delete" style="display:inline;">
+              <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="lead">No songs yet. <a href="/songs/create?album_id={{ album.id }}">Add your first song</a></p>
+  {% endif %}
+</section>
+
+<div style="margin-top: 2rem;">
+  <a href="/albums" class="btn btn-outline-primary">Back to Albums</a>
+  <a href="/artists/{{ album.artist_id }}" class="btn btn-outline-primary">Back to Artist</a>
+</div>
+
+{% endblock %}

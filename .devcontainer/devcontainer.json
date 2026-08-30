@@ -1,0 +1,48 @@
+{
+  "name": "Fyyur Dev Environment",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "web",
+  "workspaceFolder": "/workspace",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-vscode.makefile-tools",
+        "ms-vscode.remote-explorer"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.formatting.provider": "black",
+        "[python]": {
+          "editor.formatOnSave": true,
+          "editor.defaultFormatter": "ms-python.python"
+        }
+      }
+    }
+  },
+
+  "postCreateCommand": "pip install -r requirements.txt && playwright install chromium",
+  "remoteEnv": {
+    "SQLALCHEMY_DATABASE_URI": "postgresql://postgres:postgres@postgres:5432/fyyur",
+    "FLASK_APP": "app.py",
+    "FLASK_ENV": "development"
+  },
+
+  "forwardPorts": [5000, 5432],
+  "portsAttributes": {
+    "5000": {
+      "label": "Flask App",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "waitFor": "onCreateCommand"
+}

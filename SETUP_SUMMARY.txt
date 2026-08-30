@@ -1,0 +1,40 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    FYYUR DATABASE CONFIGURATION                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+PRODUCTION/DEVELOPMENT: PostgreSQL
+───────────────────────────────────
+📍 Default: postgresql://postgres:postgres@localhost:5432/fyyur
+📝 Config: config.py (SQLALCHEMY_DATABASE_URI)
+🔧 Override: export SQLALCHEMY_DATABASE_URI='postgresql://...'
+
+UNIT TESTS: SQLite (In-Memory)
+──────────────────────────────
+✅ Database: sqlite:///:memory: 
+📝 Config: tests/conftest.py (client fixture)
+💡 Benefit: No external dependencies, fast, isolated
+
+CURRENT STATUS
+──────────────
+✅ App configured for PostgreSQL
+✅ Tests configured for SQLite
+✅ All 119 tests passing with in-memory SQLite
+✅ Ready for PostgreSQL deployment
+
+NEXT STEPS
+──────────
+1. For local development:
+   → Start PostgreSQL server
+   → Create database: createdb -U postgres fyyur
+   → Initialize schema: python -c "from app import app; from dal import db; ..."
+   → Run app: python app.py
+
+2. For Docker (recommended):
+   → Use Dev Container (docker-compose handles PostgreSQL)
+   → See DEVCONTAINER.md for instructions
+
+3. For testing:
+   → Run: python -m pytest tests/ -v
+   → No PostgreSQL needed (uses SQLite in-memory)
+
+See POSTGRES_SETUP.md for detailed instructions.

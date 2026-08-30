@@ -1,0 +1,133 @@
+{% extends 'layouts/main.html' %}
+{% block title %}Set Availability{% endblock %}
+{% block content %}
+  <div class="form-wrapper">
+    <form method="post" class="form">
+      {{ form.hidden_tag() }}
+      <h3 class="form-heading">Set Weekly Availability</h3>
+      <p class="subtitle">Define when you're available to perform</p>
+      
+      <div class="form-group">
+        <label for="day_of_week">Day of Week</label>
+        <small>Select the day for this availability slot</small>
+        {% if form.day_of_week.errors %}
+          {{ form.day_of_week(class_ = 'form-control is-invalid') }}
+          <div class="invalid-feedback d-block">
+            {% for error in form.day_of_week.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.day_of_week(class_ = 'form-control') }}
+        {% endif %}
+      </div>
+      
+      <div class="form-group">
+        <label for="start_time">Start Time</label>
+        <small>What time do you start being available? (HH:MM)</small>
+        {% if form.start_time.errors %}
+          <input type="time" id="start_time" name="start_time" class="form-control is-invalid" value="{{ form.start_time.data.strftime('%H:%M') if form.start_time.data else '' }}">
+          <div class="invalid-feedback d-block">
+            {% for error in form.start_time.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          <input type="time" id="start_time" name="start_time" class="form-control" value="{{ form.start_time.data.strftime('%H:%M') if form.start_time.data else '' }}">
+        {% endif %}
+      </div>
+      
+      <div class="form-group">
+        <label for="end_time">End Time</label>
+        <small>What time do you stop being available? (HH:MM)</small>
+        {% if form.end_time.errors %}
+          <input type="time" id="end_time" name="end_time" class="form-control is-invalid" value="{{ form.end_time.data.strftime('%H:%M') if form.end_time.data else '' }}">
+          <div class="invalid-feedback d-block">
+            {% for error in form.end_time.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          <input type="time" id="end_time" name="end_time" class="form-control" value="{{ form.end_time.data.strftime('%H:%M') if form.end_time.data else '' }}">
+        {% endif %}
+      </div>
+      
+      <div class="form-group">
+        <div class="form-check">
+          <input type="checkbox" id="all_day" class="form-check-input" value="on">
+          <label class="form-check-label" for="all_day">
+            Available all day (12:00 AM - 11:59 PM)
+          </label>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <div class="form-check">
+          {% if form.is_available.data %}
+            {{ form.is_available(class_='form-check-input', checked=true) }}
+          {% else %}
+            {{ form.is_available(class_='form-check-input') }}
+          {% endif %}
+          <label class="form-check-label" for="is_available">
+            Available during this time (uncheck to mark as unavailable/blackout)
+          </label>
+        </div>
+      </div>
+      
+      <input type="submit" value="Save Availability" class="btn btn-primary btn-lg btn-block">
+    </form>
+  </div>
+
+  <script type="text/javascript">
+  (function() {
+    'use strict';
+    
+    function initAvailabilityForm() {
+      const form = document.querySelector('.form');
+      const allDayCheckbox = document.getElementById('all_day');
+      const startTimeInput = document.getElementById('start_time');
+      const endTimeInput = document.getElementById('end_time');
+      
+      if (!allDayCheckbox || !startTimeInput || !endTimeInput || !form) {
+        console.error('Form elements not found');
+        return;
+      }
+      
+      console.log('Availability form initialized');
+      
+      // When checkbox is checked, populate the times
+      allDayCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+          startTimeInput.value = '00:00';
+          endTimeInput.value = '23:59';
+          startTimeInput.classList.remove('is-invalid');
+          endTimeInput.classList.remove('is-invalid');
+        }
+      });
+      
+      // Before form submission, validate times are set
+      form.addEventListener('submit', function(e) {
+        // If all day is checked, ensure times are set
+        if (allDayCheckbox.checked) {
+          startTimeInput.value = '00:00';
+          endTimeInput.value = '23:59';
+        } else {
+          // Otherwise, both times must be filled in
+          if (!startTimeInput.value || !endTimeInput.value) {
+            e.preventDefault();
+            alert('Please fill in both start and end times, or check "Available all day"');
+            return false;
+          }
+        }
+      });
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAvailabilityForm);
+    } else {
+      initAvailabilityForm();
+    }
+  })();
+  </script>
+{% endblock %}

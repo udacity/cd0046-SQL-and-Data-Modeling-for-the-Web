@@ -1,0 +1,37 @@
+{% extends 'layouts/main.html' %}
+{% block title %}Albums{% endblock %}
+{% block content %}
+<div class="section-header">
+  <h1>Albums</h1>
+  <a href="/albums/create" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Add Album</a>
+</div>
+
+{% if albums %}
+  <div class="row">
+    {% for album in albums %}
+    <div class="col-sm-4">
+      <div class="tile tile-album">
+        {% if album.image_link %}
+        <img src="{{ album.image_link }}" alt="{{ album.title }}" class="album-cover" />
+        {% else %}
+        <div class="album-cover-placeholder">
+          <i class="fas fa-music"></i>
+        </div>
+        {% endif %}
+        <h4>{{ album.title }}</h4>
+        <p class="artist-name">by <a href="/artists/{{ album.artist_id }}">{{ album.artist_name }}</a></p>
+        {% if album.release_date %}
+        <p class="release-date"><i class="fas fa-calendar"></i> {{ album.release_date.strftime('%B %Y') }}</p>
+        {% endif %}
+        <p class="song-count">{{ album.song_count() }} {% if album.song_count() == 1 %}Song{% else %}Songs{% endif %}</p>
+        <a href="/albums/{{ album.id }}" class="btn btn-primary btn-sm">View Album</a>
+        <a href="/albums/{{ album.id }}/edit" class="btn btn-secondary btn-sm">Edit</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="lead">No albums yet. <a href="/albums/create">Create your first album</a></p>
+{% endif %}
+
+{% endblock %}

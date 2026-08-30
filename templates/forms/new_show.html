@@ -2,23 +2,187 @@
 {% block title %}New Show Listing{% endblock %}
 {% block content %}
   <div class="form-wrapper">
-    <form method="post" class="form">
+    <form method="post" class="form" id="showForm">
       <h3 class="form-heading">List a new show</h3>
+      
       <div class="form-group">
-        <label for="artist_id">Artist ID</label>
-        <small>ID can be found on the Artist's Page</small>
-        {{ form.artist_id(class_ = 'form-control', autofocus = true) }}
+        <label for="venue_id">Venue</label>
+        <small>Select a venue from the list</small>
+        {% if form.venue_id.errors %}
+          {{ form.venue_id(class_ = 'form-control is-invalid', autofocus = true) }}
+          <div class="invalid-feedback d-block">
+            {% for error in form.venue_id.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.venue_id(class_ = 'form-control', autofocus = true) }}
+        {% endif %}
       </div>
+      
       <div class="form-group">
-        <label for="venue_id">Venue ID</label>
-        <small>ID can be found on the Venue's Page</small>
-        {{ form.venue_id(class_ = 'form-control', autofocus = true) }}
+        <label for="artist_id">Artist</label>
+        <small>Select an artist from the list</small>
+        {% if form.artist_id.errors %}
+          {{ form.artist_id(class_ = 'form-control is-invalid', autofocus = true, id='artist_id_select') }}
+          <div class="invalid-feedback d-block">
+            {% for error in form.artist_id.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.artist_id(class_ = 'form-control', autofocus = true, id='artist_id_select') }}
+        {% endif %}
       </div>
+
+      <!-- Artist Availability Section -->
+      {% if artist_availability %}
+      <div class="availability-section">
+        <h4><i class="fas fa-calendar-check"></i> Artist Availability</h4>
+        {% if artist_availability.recurring_slots %}
+          <div class="availability-item">
+            <strong>Regular Schedule:</strong>
+            <ul style="margin: 5px 0 0 0; padding-left: 20px;">
+            {% for slot in artist_availability.recurring_slots %}
+              <li>{{ slot }}</li>
+            {% endfor %}
+            </ul>
+          </div>
+        {% else %}
+          <div class="availability-item">
+            <strong>Regular Schedule:</strong> Not yet defined
+          </div>
+        {% endif %}
+        
+        {% if artist_availability.exceptions %}
+          <div class="availability-item">
+            <strong>Exceptions:</strong>
+            <ul style="margin: 5px 0 0 0; padding-left: 20px;">
+            {% for exception in artist_availability.exceptions %}
+              <li>{{ exception }}</li>
+            {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+      {% endif %}
+      
       <div class="form-group">
-          <label for="start_time">Start Time</label>
-          {{ form.start_time(class_ = 'form-control', placeholder='YYYY-MM-DD HH:MM', autofocus = true) }}
-        </div>
-      <input type="submit" value="Create Venue" class="btn btn-primary btn-lg btn-block">
+        <label for="start_time">Start Time</label>
+        <small>Select date and time for the show</small>
+        {% if form.start_time.errors %}
+          <input type="datetime-local" id="start_time" name="start_time" class="form-control is-invalid" value="{{ form.start_time.data.strftime('%Y-%m-%dT%H:%M') if form.start_time.data else now.strftime('%Y-%m-%dT%H:%M') }}" min="{{ now.strftime('%Y-%m-%dT%H:%M') }}" required>
+          <div class="invalid-feedback d-block">
+            {% for error in form.start_time.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          <input type="datetime-local" id="start_time" name="start_time" class="form-control" value="{{ form.start_time.data.strftime('%Y-%m-%dT%H:%M') if form.start_time.data else now.strftime('%Y-%m-%dT%H:%M') }}" min="{{ now.strftime('%Y-%m-%dT%H:%M') }}" required>
+        {% endif %}
+      </div>
+      
+      <div class="form-group">
+        <label for="end_time">End Time</label>
+        <small>Select end date and time for the show (optional, defaults to 2 hours after start)</small>
+        {% if form.end_time.errors %}
+          <input type="datetime-local" id="end_time" name="end_time" class="form-control is-invalid" value="{{ form.end_time.data.strftime('%Y-%m-%dT%H:%M') if form.end_time.data else '' }}" {% if form.start_time.data %}min="{{ form.start_time.data.strftime('%Y-%m-%dT%H:%M') }}"{% else %}min="{{ now.strftime('%Y-%m-%dT%H:%M') }}"{% endif %}>
+          <div class="invalid-feedback d-block">
+            {% for error in form.end_time.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% else %}
+          <input type="datetime-local" id="end_time" name="end_time" class="form-control" value="{{ form.end_time.data.strftime('%Y-%m-%dT%H:%M') if form.end_time.data else '' }}" {% if form.start_time.data %}min="{{ form.start_time.data.strftime('%Y-%m-%dT%H:%M') }}"{% else %}min="{{ now.strftime('%Y-%m-%dT%H:%M') }}"{% endif %}>
+        {% endif %}
+      </div>
+      
+      <input type="submit" value="Create Show" class="btn btn-primary btn-lg btn-block">
     </form>
   </div>
+
+  <script>
+  // Convert UTC time string to local browser timezone
+  function convertUTCToLocal(utcTimeString) {
+    if (!utcTimeString) return '';
+    
+    // Parse the UTC time string (format: "2026-08-30T21:00")
+    const [date, time] = utcTimeString.split('T');
+    const [year, month, day] = date.split('-');
+    const [hours, minutes] = time.split(':');
+    
+    // Create a Date object in UTC
+    const utcDate = new Date(Date.UTC(
+      parseInt(year), 
+      parseInt(month) - 1, 
+      parseInt(day), 
+      parseInt(hours), 
+      parseInt(minutes)
+    ));
+    
+    // Convert to local timezone
+    const pad = (n) => String(n).padStart(2, '0');
+    const localYear = utcDate.getFullYear();
+    const localMonth = pad(utcDate.getMonth() + 1);
+    const localDay = pad(utcDate.getDate());
+    const localHours = pad(utcDate.getHours());
+    const localMinutes = pad(utcDate.getMinutes());
+    
+    return `${localYear}-${localMonth}-${localDay}T${localHours}:${localMinutes}`;
+  }
+
+  // When artist is selected, reload the form to show their availability
+  document.getElementById('artist_id_select').addEventListener('change', function() {
+    if (this.value) {
+      // Store form data in URL parameters and reload
+      const formData = new FormData(document.getElementById('showForm'));
+      const params = new URLSearchParams();
+      for (let [key, value] of formData) {
+        params.append(key, value);
+      }
+      // Reload the form page with the selected artist to show availability
+      window.location.href = '/shows/create?artist_id=' + this.value;
+    }
+  });
+
+  // Update end_time min attribute when start_time changes
+  const startTimeInput = document.getElementById('start_time');
+  const endTimeInput = document.getElementById('end_time');
+  
+  function updateEndTimeMin() {
+    if (startTimeInput.value) {
+      // Set end_time min to be equal to start_time
+      endTimeInput.min = startTimeInput.value;
+    }
+  }
+  
+  // Convert all UTC times to local browser timezone on page load
+  function initializeTimeInputs() {
+    // Convert start_time min and value from UTC to local
+    if (startTimeInput.min) {
+      startTimeInput.min = convertUTCToLocal(startTimeInput.min);
+    }
+    if (startTimeInput.value) {
+      startTimeInput.value = convertUTCToLocal(startTimeInput.value);
+    }
+    
+    // Convert end_time min and value from UTC to local
+    if (endTimeInput.min) {
+      endTimeInput.min = convertUTCToLocal(endTimeInput.min);
+    }
+    if (endTimeInput.value) {
+      endTimeInput.value = convertUTCToLocal(endTimeInput.value);
+    }
+  }
+  
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', initializeTimeInputs);
+  
+  // Update on page load (in case start_time already has a value)
+  updateEndTimeMin();
+  
+  // Update when start_time changes
+  startTimeInput.addEventListener('change', updateEndTimeMin);
+  startTimeInput.addEventListener('input', updateEndTimeMin);
+  </script>
 {% endblock %}

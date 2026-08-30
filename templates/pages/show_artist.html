@@ -72,7 +72,17 @@
 	</div>
 </section>
 
-<a href="/artists/{{ artist.id }}/edit"><button class="btn btn-primary btn-lg">Edit</button></a>
+<a href="/artists/{{ artist.id }}/edit"><button class="btn btn-primary btn-lg">Edit Profile</button></a>
+<a href="/shows/create?artist_id={{ artist.id }}"><button class="btn btn-success btn-lg">Book a Show</button></a>
+<a href="/artists/{{ artist.id }}/availability"><button class="btn btn-info btn-lg">Manage Availability</button></a>
+<a href="/albums/create?artist_id={{ artist.id }}"><button class="btn btn-warning btn-lg"><i class="fas fa-compact-disc"></i> Add Album</button></a>
+<a href="/albums?artist_id={{ artist.id }}"><button class="btn btn-secondary btn-lg"><i class="fas fa-music"></i> View Albums</button></a>
+
+<div style="margin-top: 2rem;">
+	<form method="post" action="/artists/{{ artist.id }}/delete" style="display:inline;">
+		<button type="submit" class="btn btn-danger btn-lg" onclick="return confirm('Are you sure? This will permanently delete this artist profile. This action cannot be undone.');">Delete Artist</button>
+	</form>
+</div>
 
 {% endblock %}
 

@@ -10,6 +10,9 @@
             <h5><a href="/artists/{{ show.artist_id }}">{{ show.artist_name }}</a></h5>
             <p>playing at</p>
             <h5><a href="/venues/{{ show.venue_id }}">{{ show.venue_name }}</a></h5>
+            <div style="margin-top: 0.5rem;">
+                <a href="/shows/{{ show.id }}"><small>Details</small></a>
+            </div>
         </div>
     </div>
     {% endfor %}

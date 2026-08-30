@@ -1,16 +1,39 @@
 {% extends 'layouts/main.html' %}
-{% block title %}Show Search{% endblock %}
+{% block title %}Show - Fyyur{% endblock %}
 {% block content %}
 
-    <div class="page-header">
-        <h1>Fyyur Search!</h1>
-    </div>
-    <p class="lead"> Show Search </p>
-
-    <ul class="nav nav-pills">
-        <li class="active"><a>Shows</a></li>
-    </ul>
-
-{#    Todo implement show search frontend #}
+<div class="row">
+	<div class="col-sm-8">
+		<h1>Show Details</h1>
+		
+		<div class="show-details" style="margin-top: 2rem;">
+			<div style="margin-bottom: 1.5rem;">
+				<h3>Artist</h3>
+				<p><a href="/artists/{{ show.artist_id }}">{{ show.artist_name }}</a></p>
+			</div>
+			
+			<div style="margin-bottom: 1.5rem;">
+				<h3>Venue</h3>
+				<p><a href="/venues/{{ show.venue_id }}">{{ show.venue_name }}</a></p>
+			</div>
+			
+			<div style="margin-bottom: 1.5rem;">
+				<h3>Date & Time</h3>
+				<p><strong>Start:</strong> {{ show.start_time|datetime('full') }}</p>
+				<p><strong>End:</strong> {{ show.end_time|datetime('full') }}</p>
+			</div>
+		</div>
+		
+		<div style="margin-top: 3rem;">
+			<a href="/shows/{{ show.id }}/edit"><button class="btn btn-primary btn-lg">Edit</button></a>
+			
+			<div style="margin-top: 1rem; display:inline-block;">
+				<form method="post" action="/shows/{{ show.id }}/delete" style="display:inline;">
+					<button type="submit" class="btn btn-danger btn-lg" onclick="return confirm('Are you sure? This will permanently delete this show. This action cannot be undone.');">Delete Show</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
 
 {% endblock %}

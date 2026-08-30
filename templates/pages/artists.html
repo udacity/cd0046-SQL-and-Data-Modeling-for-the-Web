@@ -1,6 +1,47 @@
 {% extends 'layouts/main.html' %}
 {% block title %}Fyyur | Artists{% endblock %}
 {% block content %}
+<!-- Artist Search Form -->
+<div class="form-section">
+	<h2>Search Artists</h2>
+	<form method="post" action="/artists/search" id="artist-search-form">
+		<div class="form-group">
+			<label for="search_term">Artist Name</label>
+			<input class="form-control" type="text" id="search_term" name="search_term" placeholder="Partial name search..." />
+		</div>
+		<div class="form-group">
+			<label for="city">City</label>
+			<input class="form-control" type="text" id="city" name="city" placeholder="Partial city search..." />
+		</div>
+		<div class="form-group">
+			<label for="state">State</label>
+			<select class="form-control" id="state" name="state">
+				<option value="">-- Any State --</option>
+				{% for state_code, state_name in states %}
+				<option value="{{ state_code }}">{{ state_name }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="genres">Genres</label>
+			<small>Hold Ctrl/Cmd to select multiple</small>
+			<select class="form-control" id="genres" name="genres" multiple>
+				{% for genre_code, genre_name in genres %}
+				<option value="{{ genre_name }}">{{ genre_name }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<button type="submit" class="btn btn-primary">Search</button>
+	</form>
+</div>
+
+<hr />
+
+<!-- All Artists -->
+<div class="section-header">
+	<h2>All Artists</h2>
+	<a href="/artists/create" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Add Artist</a>
+</div>
 <ul class="items">
 	{% for artist in artists %}
 	<li>

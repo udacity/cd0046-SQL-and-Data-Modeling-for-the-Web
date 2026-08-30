@@ -1,6 +1,47 @@
 {% extends 'layouts/main.html' %}
 {% block title %}Fyyur | Venues{% endblock %}
 {% block content %}
+<!-- Venue Search Form -->
+<div class="form-section">
+	<h2>Search Venues</h2>
+	<form method="post" action="/venues/search" id="venue-search-form">
+		<div class="form-group">
+			<label for="search_term">Venue Name</label>
+			<input class="form-control" type="text" id="search_term" name="search_term" placeholder="Partial name search..." />
+		</div>
+		<div class="form-group">
+			<label for="city">City</label>
+			<input class="form-control" type="text" id="city" name="city" placeholder="Partial city search..." />
+		</div>
+		<div class="form-group">
+			<label for="state">State</label>
+			<select class="form-control" id="state" name="state">
+				<option value="">-- Any State --</option>
+				{% for state_code, state_name in states %}
+				<option value="{{ state_code }}">{{ state_name }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="genres">Genres</label>
+			<small>Hold Ctrl/Cmd to select multiple</small>
+			<select class="form-control" id="genres" name="genres" multiple>
+				{% for genre_code, genre_name in genres %}
+				<option value="{{ genre_name }}">{{ genre_name }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<button type="submit" class="btn btn-primary">Search</button>
+	</form>
+</div>
+
+<hr />
+
+<!-- All Venues by Location -->
+<div class="section-header">
+	<h2>All Venues</h2>
+	<a href="/venues/create" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Add Venue</a>
+</div>
 {% for area in areas %}
 <h3>{{ area.city }}, {{ area.state }}</h3>
 	<ul class="items">
